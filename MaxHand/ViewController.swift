@@ -10,20 +10,22 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate {
+class ViewController: UIViewController {
 
-    @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var sessionInfoView: UIView!
     @IBOutlet weak var sessionInfoLabel: UILabel!
     
     var sceneController = MaxScene()
     var didInitializeScene: Bool = false
     var didInitializeMax: Bool = false
+    var isDetectPlane: Bool = false
     
     @IBAction func resetButton(){
         resetTracking();
         sceneController.removeAllMax();
         didInitializeMax = false;
+        isDetectPlane = false;
     }
     @IBAction func popMax(_ sender: Any) {
         popMax();
@@ -139,54 +141,66 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
+    
 }
-extension ViewController: ARSessionDelegate{
+extension ViewController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
     
     /// - Tag: PlaceARContent
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        // Place content only for anchors found by plane detection.
+        
+        if self.isDetectPlane { return }
+        
+        self.isDetectPlane = true
+        // 1
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         
-        // Create a custom object to visualize the plane geometry and extent.
-        let plane = Plane(anchor: planeAnchor, in: sceneView)
+        // 2
+        let width = CGFloat(planeAnchor.extent.x)
+        let height = CGFloat(planeAnchor.extent.z)
+        let plane = SCNPlane(width: width, height: height)
         
-        // Add the visualization to the ARKit-managed node so that it tracks
-        // changes in the plane anchor as plane estimation continues.
-        node.addChildNode(plane)
+        // 3
+        plane.materials.first?.diffuse.contents = UIColor.red
+        
+        // 4
+        let planeNode = SCNNode(geometry: plane)
+        
+        // 5
+        let x = CGFloat(planeAnchor.center.x)
+        let y = CGFloat(planeAnchor.center.y)
+        let z = CGFloat(planeAnchor.center.z)
+        planeNode.position = SCNVector3(x,y,z)
+        planeNode.eulerAngles.x = -.pi / 2
+        
+        // 6
+        node.addChildNode(planeNode)
+        print("hel1lo")
+        
     }
+    
+    
     
     /// - Tag: UpdateARContent
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        // Update only anchors and nodes set up by `renderer(_:didAdd:for:)`.
-        guard let planeAnchor = anchor as? ARPlaneAnchor,
-            let plane = node.childNodes.first as? Plane
-            else { return }
-        
-        // Update ARSCNPlaneGeometry to the anchor's new estimated shape.
-        if let planeGeometry = plane.meshNode.geometry as? ARSCNPlaneGeometry {
-            planeGeometry.update(from: planeAnchor.geometry)
+        if self.didInitializeMax {
+            return
         }
         
-        // Update extent visualization to the anchor's new bounding rectangle.
-        if let extentGeometry = plane.extentNode.geometry as? SCNPlane {
-            extentGeometry.width = CGFloat(planeAnchor.extent.x)
-            extentGeometry.height = CGFloat(planeAnchor.extent.z)
-            plane.extentNode.simdPosition = planeAnchor.center
+        if node.childNodes.isEmpty {
+            return
+        }
+        guard let planeAnchor = anchor as? ARPlaneAnchor else {
+            return
         }
         
-        // Update the plane's classification and the text position
-        if #available(iOS 12.0, *),
-            let classificationNode = plane.classificationNode,
-            let classificationGeometry = classificationNode.geometry as? SCNText {
-            let currentClassification = planeAnchor.classification.description
-            if let oldClassification = classificationGeometry.string as? String, oldClassification != currentClassification {
-                classificationGeometry.string = currentClassification
-                classificationNode.centerAlign()
-            }
-        }
-        
+        node.addChildNode(Max())
+        print("hel2lo")
     }
+}
+
+extension ViewController: ARSessionDelegate{
+    
     // MARK: - ARSessionObserver
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -262,7 +276,7 @@ extension ViewController: ARSessionDelegate{
     
     private func resetTracking() {
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.horizontal, .vertical]
+        configuration.planeDetection = [.horizontal]
         sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
     }
     
