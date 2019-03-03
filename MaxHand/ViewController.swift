@@ -68,14 +68,23 @@ class ViewController: UIViewController {
     @objc func didTapScreen(recognizer: UITapGestureRecognizer) {
         print("touch")
         let tapLocation = recognizer.location(in: sceneView)
-        let hitTestResults = sceneView.hitTest(tapLocation)
-        if let node = hitTestResults.first?.node, let scene = sceneController.scene, let plane = node.childNode(withName: nodeEnum.plane.rawValue, recursively: true){
-//            let plane = node.topmost(until: scene.rootNode)
-            
-            print(plane)
-            plane.addChildNode(Max())
-     
-        }
+        let hitTestResults = sceneView.hitTest(tapLocation, types: .existingPlaneUsingExtent)
+        guard let hitTestResult = hitTestResults.first
+            else { return }
+
+        let translation = hitTestResult.worldTransform[3]
+        let x = translation[0]
+        let y = translation[1]
+        let z = translation[2]
+        let max = Max()
+        max.position = SCNVector3(x,y,z)
+        guard let plane = sceneView.scene.rootNode.childNode(withName: nodeEnum.plane.rawValue, recursively: true)
+            else {print("return")
+                return}
+        print(plane)
+//        plane.addChildNode(max)
+
+        sceneView.scene.rootNode.addChildNode(max)
     }
     
 }
@@ -114,7 +123,7 @@ extension ViewController: ARSCNViewDelegate {
         
         let maxExtentValue = maxExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.y)
 
-        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown, doubleSided: false, horizontal: true)
+        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIImage(named: "square") as Any, doubleSided: false, horizontal: true)
         // 5
         let x = CGFloat(planeAnchor.center.x)
         let y = CGFloat(planeAnchor.center.y)
@@ -123,9 +132,13 @@ extension ViewController: ARSCNViewDelegate {
         planeNode.name = nodeEnum.plane.rawValue
         // 6
         node.addChildNode(planeNode)
-        print(node)
-        print(planeNode)
-        print("hel1lo")
+        
+//        print(sceneView.scene.rootNode)
+//        let rootNode = sceneView.scene.rootNode
+//        print(rootNode.childNodes)
+//        print(node)
+//        print(planeNode)
+//        print("hel1lo")
         
     }
     func maxExtent(a: Float,b: Float) -> Float{
@@ -141,8 +154,8 @@ extension ViewController: ARSCNViewDelegate {
     // - Tag: UpdateARContent
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor, let plane = node.childNodes.first as? Plane else { return }
-
-        if  plane.name == nodeEnum.plane.rawValue {print("plane")}
+        print(plane)
+        if  plane.name == nodeEnum.plane.rawValue {}
         
     }
 }
