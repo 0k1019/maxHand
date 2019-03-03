@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2AF5B63F222BA7FE00A039EC /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF5B63E222BA7FE00A039EC /* Plane.swift */; };
+		2AF5B641222BAB4D00A039EC /* nodeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF5B640222BAB4D00A039EC /* nodeEnum.swift */; };
 		2AF7B41421ECAB0A00A868B8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B41321ECAB0A00A868B8 /* AppDelegate.swift */; };
 		2AF7B41621ECAB0A00A868B8 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AF7B41521ECAB0A00A868B8 /* art.scnassets */; };
 		2AF7B41821ECAB0A00A868B8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B41721ECAB0A00A868B8 /* ViewController.swift */; };
@@ -18,12 +20,13 @@
 		2AF7B43F21EDECFF00A868B8 /* NodeUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B43E21EDECFF00A868B8 /* NodeUtils.swift */; };
 		2AF7B44121EDF68700A868B8 /* SCNVector3+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B44021EDF68600A868B8 /* SCNVector3+Extensions.swift */; };
 		2AF7B44521EDF6D900A868B8 /* Node+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B44421EDF6D800A868B8 /* Node+Extensions.swift */; };
-		2AF7B44721EDFF4300A868B8 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B44621EDFF4300A868B8 /* Plane.swift */; };
 		2AF7B44921EE021400A868B8 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B44821EE021400A868B8 /* Utilities.swift */; };
 		2AF7B44B21EE03BD00A868B8 /* Assets.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AF7B44A21EE03BC00A868B8 /* Assets.scnassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2AF5B63E222BA7FE00A039EC /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
+		2AF5B640222BAB4D00A039EC /* nodeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nodeEnum.swift; sourceTree = "<group>"; };
 		2AF7B41021ECAB0A00A868B8 /* MaxHand.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaxHand.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AF7B41321ECAB0A00A868B8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2AF7B41521ECAB0A00A868B8 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -37,7 +40,6 @@
 		2AF7B43E21EDECFF00A868B8 /* NodeUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeUtils.swift; sourceTree = "<group>"; };
 		2AF7B44021EDF68600A868B8 /* SCNVector3+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SCNVector3+Extensions.swift"; sourceTree = "<group>"; };
 		2AF7B44421EDF6D800A868B8 /* Node+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Node+Extensions.swift"; sourceTree = "<group>"; };
-		2AF7B44621EDFF4300A868B8 /* Plane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		2AF7B44821EE021400A868B8 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		2AF7B44A21EE03BC00A868B8 /* Assets.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Assets.scnassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				2AF7B43621EDCBB300A868B8 /* Max.swift */,
+				2AF5B63E222BA7FE00A039EC /* Plane.swift */,
 			);
 			path = Object;
 			sourceTree = "<group>";
@@ -110,6 +113,7 @@
 				2AF7B44021EDF68600A868B8 /* SCNVector3+Extensions.swift */,
 				2AF7B44421EDF6D800A868B8 /* Node+Extensions.swift */,
 				2AF7B43E21EDECFF00A868B8 /* NodeUtils.swift */,
+				2AF5B640222BAB4D00A039EC /* nodeEnum.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -118,7 +122,6 @@
 			isa = PBXGroup;
 			children = (
 				2AF7B43321EDC7E600A868B8 /* MaxScene.swift */,
-				2AF7B44621EDFF4300A868B8 /* Plane.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -198,12 +201,13 @@
 			files = (
 				2AF7B43421EDC7E600A868B8 /* MaxScene.swift in Sources */,
 				2AF7B44521EDF6D900A868B8 /* Node+Extensions.swift in Sources */,
+				2AF5B63F222BA7FE00A039EC /* Plane.swift in Sources */,
 				2AF7B44121EDF68700A868B8 /* SCNVector3+Extensions.swift in Sources */,
 				2AF7B41821ECAB0A00A868B8 /* ViewController.swift in Sources */,
 				2AF7B43721EDCBB300A868B8 /* Max.swift in Sources */,
+				2AF5B641222BAB4D00A039EC /* nodeEnum.swift in Sources */,
 				2AF7B41421ECAB0A00A868B8 /* AppDelegate.swift in Sources */,
 				2AF7B44921EE021400A868B8 /* Utilities.swift in Sources */,
-				2AF7B44721EDFF4300A868B8 /* Plane.swift in Sources */,
 				2AF7B43F21EDECFF00A868B8 /* NodeUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
