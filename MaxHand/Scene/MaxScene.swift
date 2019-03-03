@@ -31,6 +31,13 @@ struct MaxScene {
             }
         })
     }
+    func addMaxByNodeAndVector(node: SCNNode, vector: SCNVector3){
+        let max = Max()
+        max.position = vector
+        max.scale = SCNVector3(5,5,5)
+        node.addChildNode(max)
+    }
+    
     func removeAllMax(){
         guard let scene = self.scene else { return }
         scene.rootNode.enumerateChildNodes { (node, stop) in

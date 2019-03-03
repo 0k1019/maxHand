@@ -36,14 +36,14 @@ class ViewController: UIViewController {
         
         // Set the view's delegate
         sceneView.delegate = self
-        
-        // Show statistics such as fps and timing information
-        sceneView.showsStatistics = true
-        
+
         // Create a new scene
         if let scene = sceneController.scene {
             sceneView.scene = scene
         }
+        
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.didTapScreen))
+        self.view.addGestureRecognizer(tapRecognizer)
     }
     // - TAG: StartARSession
     override func viewDidAppear(_ animated: Bool) {
@@ -60,6 +60,9 @@ class ViewController: UIViewController {
         // Prevent the screen from being dimmed after a while as users will likely
         // have long periods of interaction without touching the screen or buttons.
         UIApplication.shared.isIdleTimerDisabled = true
+        
+        // Show debug UI to view performance metrics (e.g. frames per second).
+        sceneView.showsStatistics = true
         
     }
     func popMax(){
@@ -86,41 +89,24 @@ class ViewController: UIViewController {
         }
     }
     
-//    @objc func didTapScreen(recognizer: UITapGestureRecognizer) {
-//        if didInitializeScene, let camera = sceneView.session.currentFrame?.camera {
-//            let tapLocation = recognizer.location(in: sceneView)
-//            let hitTestResults = sceneView.hitTest(tapLocation)
-//            if let node = hitTestResults.first?.node, let scene = sceneController.scene, let sphere = node.topmost(until: scene.rootNode) as? Max {
-//                sphere.animate()
-//            }
-//            else {
-//                var translation = matrix_identity_float4x4
-//                translation.columns.3.z = -5.0
-//                let transform = camera.transform * translation
-//                let position = SCNVector3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
-//                sceneController.addMax(position: position)
-//            }
+    @objc func didTapScreen(recognizer: UITapGestureRecognizer) {
+//        if self.didInitializeMax {
+//            return
 //        }
-//    }
-
-    // MARK: - ARSCNViewDelegate
-    
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
-    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
-     
-        return node
-    }
-*/
-    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        if let camera = sceneView.session.currentFrame?.camera {
-            didInitializeScene = true
-            let transform = camera.transform
-            let position = SCNVector3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
-            sceneController.makeUpdateCameraPos(cameraTransform: transform)
+        print("touch")
+        if didInitializeScene {
+            let tapLocation = recognizer.location(in: sceneView)
+            let hitTestResults = sceneView.hitTest(tapLocation)
+            if let node = hitTestResults.first?.node, let scene = sceneController.scene{
+                let plane = node.topmost(until: scene.rootNode)
+                print(plane)
+                plane.addChildNode(Max())
+         
+            }
         }
     }
+
+
     
     //기본 세팅 들.
     override func viewWillAppear(_ animated: Bool) {
@@ -145,6 +131,25 @@ class ViewController: UIViewController {
 }
 extension ViewController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
+    
+    // MARK: - ARSCNViewDelegate
+    
+    /*
+     // Override to create and configure nodes for anchors added to the view's session.
+     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+     let node = SCNNode()
+     
+     return node
+     }
+     */
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        if let camera = sceneView.session.currentFrame?.camera {
+            didInitializeScene = true
+            let transform = camera.transform
+            let position = SCNVector3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
+            sceneController.makeUpdateCameraPos(cameraTransform: transform)
+        }
+    }
     
     /// - Tag: PlaceARContent
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
@@ -182,21 +187,18 @@ extension ViewController: ARSCNViewDelegate {
     
     
     /// - Tag: UpdateARContent
-    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        if self.didInitializeMax {
-            return
-        }
-        
-        if node.childNodes.isEmpty {
-            return
-        }
-        guard let planeAnchor = anchor as? ARPlaneAnchor else {
-            return
-        }
-        
-        node.addChildNode(Max())
-        print("hel2lo")
-    }
+//    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+//        if self.didInitializeMax {
+//            return
+//        }
+//
+//        if node.childNodes.isEmpty {
+//            return
+//        }
+//        self.didInitializeMax = true
+//        node.addChildNode(Max())
+//        print("hel2lo")
+//    }
 }
 
 extension ViewController: ARSessionDelegate{
