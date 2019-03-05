@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     var isDetectPlane: Bool = false
     var detectedPlanes: [String : SCNNode] = [:]
     var isOneCharaterMode: Bool = true
-    
+
     @IBAction func resetButton(){
         resetTracking();
         sceneController.removeAllMax();
@@ -122,11 +122,14 @@ extension ViewController: ARSCNViewDelegate {
 
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         
-        
         if (isOneCharaterMode) {
             self.isDetectPlane = true
         } else {
             self.isDetectPlane = false
+        }
+        DispatchQueue.main.async {
+            let generator = UIImpactFeedbackGenerator(style: .heavy)
+            generator.impactOccurred()
         }
         
         let maxExtentValue = maxExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.y)
