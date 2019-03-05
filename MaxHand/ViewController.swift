@@ -19,6 +19,7 @@ class ViewController: UIViewController {
     var sceneController = MaxScene()
     var didInitializeMax: Bool = false
     var isDetectPlane: Bool = false
+    var detectedPlanes: [String : SCNNode] = [:]
     
     @IBAction func resetButton(){
         resetTracking();
@@ -26,7 +27,7 @@ class ViewController: UIViewController {
         didInitializeMax = false;
         isDetectPlane = false;
     }
-    
+    //시스템에의해 자동으로 호출, 리소스 초기화나 초기 화면 구성용도, 화면 처음 만들어질 때 한 번만 실행.
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,18 +42,14 @@ class ViewController: UIViewController {
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.didTapScreen))
         self.view.addGestureRecognizer(tapRecognizer)
     }
+    // 뷰가 이제 나타날 거라는 신호
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setUpSceneView()
+    }
     // - TAG: StartARSession
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        setUpSceneView()
-    }
-    //기본 세팅 들.
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
-        // Run the view's session
-        sceneView.session.run(configuration)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -60,7 +57,9 @@ class ViewController: UIViewController {
         // Pause the view's session
         sceneView.session.pause()
     }
-    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
@@ -88,62 +87,66 @@ class ViewController: UIViewController {
 }
 extension ViewController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
-    
-    // MARK: - ARSCNViewDelegate
-    
-    /*
-     // Override to create and configure nodes for anchors added to the view's session.
-     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-     let node = SCNNode()
-     
-     return node
-     }
-     */
-    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-//        if let camera = sceneView.session.currentFrame?.camera {
-//            didInitializeScene = true
-//            let transform = camera.transform
-//            let position = SCNVector3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
-//            sceneController.makeUpdateCameraPos(cameraTransform: transform)
-//        }
-    }
+
+//    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+//        return nil
+//    }
     
     /// - Tag: PlaceARContent
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        
-        if self.isDetectPlane { return }
-        
-        self.isDetectPlane = true
-        
+//        if self.isDetectPlane { return }
+//
+//        self.isDetectPlane = true
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         
         let maxExtentValue = maxExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.y)
 
         let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIImage(named: "square") as Any, doubleSided: false, horizontal: true)
-        let x = CGFloat(planeAnchor.center.x)
-        let y = CGFloat(planeAnchor.center.y)
-        let z = CGFloat(planeAnchor.center.z)
-        planeNode.position = SCNVector3(x,y,z)
+
+        
+        let x = planeAnchor.center.x
+        let y = planeAnchor.center.y
+        let z = planeAnchor.center.z
+        planeNode.position = SCNVector3Make(x,y,z)
         planeNode.name = nodeEnum.plane.rawValue
-        // 6
+        
         node.addChildNode(planeNode)
-    }
-    func maxExtent(a: Float,b: Float) -> Float{
-        if a>b {return a}
-        else {return b}
-    }
-    func minExtent(a: Float,b: Float) -> Float{
-        if a<b {return a}
-        else {return b}
+        //each ancor has an unique identifier
+        detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
+        print(detectedPlanes)
     }
     
+//    func renderer(_ renderer: SCNSceneRenderer, willUpdate node: SCNNode, for anchor: ARAnchor) {
+//
+//    }
     
     // - Tag: UpdateARContent
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        guard let planeAnchor = anchor as? ARPlaneAnchor, let plane = node.childNodes.first as? Plane else { return }
-        print(plane)
-        if  plane.name == nodeEnum.plane.rawValue {}
-        
+//        guard let planeAnchor = anchor as? ARPlaneAnchor
+//        else {
+////            print("planeAnchor((((((((()))) )))))")
+//            return
+//        }
+//        guard let planeNode = detectedPlanes[planeAnchor.identifier.uuidString]
+//        else {
+////            print("planeNode(((((((((((")
+//            return
+//        }
+//
+//        guard let planeGeometry = planeNode.geometry as? SCNPlane
+//            else{
+////                print("planeGeometry")
+//                return
+//        }
+//
+//        planeGeometry.width = CGFloat(planeAnchor.extent.x)
+//        planeGeometry.height = CGFloat(planeAnchor.extent.z)
+//
+//        let x = planeAnchor.center.x
+//        let y = planeAnchor.center.y
+//        let z = planeAnchor.center.z
+//        planeNode.position = SCNVector3Make(x,y,z)
+
     }
 }
 
@@ -246,5 +249,16 @@ extension ViewController: ARSessionDelegate{
         sceneView.showsStatistics = true
         
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+    }
+}
+
+extension ViewController {
+    func maxExtent(a: Float,b: Float) -> Float{
+        if a>b {return a}
+        else {return b}
+    }
+    func minExtent(a: Float,b: Float) -> Float{
+        if a<b {return a}
+        else {return b}
     }
 }
