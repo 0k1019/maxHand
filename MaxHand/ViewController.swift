@@ -15,17 +15,41 @@ class ViewController: UIViewController {
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var sessionInfoView: UIView!
     @IBOutlet weak var sessionInfoLabel: UILabel!
+    @IBOutlet weak var oneMultSegButton: UISegmentedControl!
     
     var sceneController = MaxScene()
     var didInitializeMax: Bool = false
     var isDetectPlane: Bool = false
     var detectedPlanes: [String : SCNNode] = [:]
+    var isOneCharaterMode: Bool = true
     
     @IBAction func resetButton(){
         resetTracking();
         sceneController.removeAllMax();
         didInitializeMax = false;
         isDetectPlane = false;
+        detectedPlanes = [:]
+    }
+    @IBAction func oneMultSegButtonValueChangeAction(_ sender: Any) {
+        if (oneMultSegButton.selectedSegmentIndex == 0){
+            self.isOneCharaterMode = true
+            let rootnode = sceneView.scene.rootNode
+            rootnode.enumerateChildNodes { (node, stop) in
+                if (node.name == "planeNode"){
+                    node.removeFromParentNode()
+                }
+            }
+        } else{
+            self.isOneCharaterMode = false
+            self.isDetectPlane = false
+            let rootnode = sceneView.scene.rootNode
+            rootnode.enumerateChildNodes { (node, stop) in
+                if (node.name == "planeNode"){
+                    node.removeFromParentNode()
+                }
+            }
+
+        }
     }
     //시스템에의해 자동으로 호출, 리소스 초기화나 초기 화면 구성용도, 화면 처음 만들어질 때 한 번만 실행.
     override func viewDidLoad() {
@@ -94,26 +118,32 @@ extension ViewController: ARSCNViewDelegate {
     
     /// - Tag: PlaceARContent
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-//        if self.isDetectPlane { return }
-//
-//        self.isDetectPlane = true
+        if self.isDetectPlane { return }
+
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+        
+        
+        if (isOneCharaterMode) {
+            self.isDetectPlane = true
+        } else {
+            self.isDetectPlane = false
+        }
         
         let maxExtentValue = maxExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.y)
 
         let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIImage(named: "square") as Any, doubleSided: false, horizontal: true)
 
-        
         let x = planeAnchor.center.x
         let y = planeAnchor.center.y
         let z = planeAnchor.center.z
         planeNode.position = SCNVector3Make(x,y,z)
         planeNode.name = nodeEnum.plane.rawValue
         
+        node.name = "planeNode"
         node.addChildNode(planeNode)
         //each ancor has an unique identifier
         detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
-        print(detectedPlanes)
+//        print(detectedPlanes)
     }
     
 //    func renderer(_ renderer: SCNSceneRenderer, willUpdate node: SCNNode, for anchor: ARAnchor) {
@@ -228,6 +258,11 @@ extension ViewController: ARSessionDelegate{
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal]
         sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        self.sceneView.session.run(configuration)
+        sceneView.showsStatistics = true
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        sceneView.delegate = self
+        sceneView.session.delegate = self
     }
     private func setUpSceneView() {
 
