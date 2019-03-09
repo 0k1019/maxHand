@@ -9,6 +9,8 @@
 import UIKit
 import SceneKit
 import ARKit
+import CoreML
+import Vision
 
 class ViewController: UIViewController {
 
@@ -22,7 +24,19 @@ class ViewController: UIViewController {
     var isDetectPlane: Bool = false
     var detectedPlanes: [String : SCNNode] = [:]
     var isOneCharaterMode: Bool = true
-
+    
+    var currentBuffer: CVPixelBuffer?
+    let visionQueue = DispatchQueue(label:"com.youngho.maxhand")
+    private lazy var predictionRequest: VNCoreMLRequest = {
+        do{
+            let model = try VNCoreMLModel(for: HandModel().model)
+            let request = VNCoreMLRequest(model: model)
+            request.imageCropAndScaleOption = VNImageCropAndScaleOption.scaleFill
+            return request
+        } catch {
+            fatalError("can't load Vision ML Model: \(error)")
+        }
+    }()
     @IBAction func resetButton(){
         resetTracking();
         sceneController.removeAllMax();
@@ -185,6 +199,15 @@ extension ViewController: ARSCNViewDelegate {
 
 extension ViewController: ARSessionDelegate{
     
+    func session(_ session: ARSession, didUpdate frame: ARFrame){
+        //currentBuffer가 nil이아니거나 camera의 state가 normal이 아니면 리턴.
+        guard currentBuffer == nil, case .normal = frame.camera.trackingState else {
+            return
+        }
+        currentBuffer = frame.capturedImage
+    }
+    
+    
     // MARK: - ARSessionObserver
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -298,5 +321,20 @@ extension ViewController {
     func minExtent(a: Float,b: Float) -> Float{
         if a<b {return a}
         else {return b}
+    }
+    
+    private func startDetection() {
+        guard let buffer = currentBuffer else { return }
+        
+        let requestHandler = VNImageRequestHandler(cvPixelBuffer: buffer, orientation: .right)
+        
+        visionQueue.async{
+            try? requestHandler.perform([self.predictionRequest])
+            guard let observation = self.predictionRequest.results?.first as? VNPixelBufferObservation else {
+                fatalError("Unexpected result type from VNCoreMLRequest")
+            }
+            //currentBuffer가 다음 프레임에 대해서 처리할 수 있도록.
+            self.currentBuffer = nil
+        }
     }
 }
