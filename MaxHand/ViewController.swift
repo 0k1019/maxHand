@@ -26,17 +26,9 @@ class ViewController: UIViewController {
     var isOneCharaterMode: Bool = true
     
     var currentBuffer: CVPixelBuffer?
-    let visionQueue = DispatchQueue(label:"com.youngho.maxhand")
-    private lazy var predictionRequest: VNCoreMLRequest = {
-        do{
-            let model = try VNCoreMLModel(for: HandModel().model)
-            let request = VNCoreMLRequest(model: model)
-            request.imageCropAndScaleOption = VNImageCropAndScaleOption.scaleFill
-            return request
-        } catch {
-            fatalError("can't load Vision ML Model: \(error)")
-        }
-    }()
+    var previewView = UIImageView()
+    let handDetector = HandDetector()
+    
     @IBAction func resetButton(){
         resetTracking();
         sceneController.removeAllMax();
@@ -79,11 +71,13 @@ class ViewController: UIViewController {
         
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.didTapScreen))
         self.view.addGestureRecognizer(tapRecognizer)
+        
     }
     // 뷰가 이제 나타날 거라는 신호
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpSceneView()
+        
     }
     // - TAG: StartARSession
     override func viewDidAppear(_ animated: Bool) {
@@ -205,6 +199,7 @@ extension ViewController: ARSessionDelegate{
             return
         }
         currentBuffer = frame.capturedImage
+        startDetection()
     }
     
     
@@ -291,7 +286,7 @@ extension ViewController: ARSessionDelegate{
         sceneView.session.delegate = self
     }
     private func setUpSceneView() {
-
+        view = sceneView
         sceneView.delegate = self
         // Start the view's AR session with a configuration that uses the rear camera,
         // device position and orientation tracking, and plane detection.
@@ -310,6 +305,12 @@ extension ViewController: ARSessionDelegate{
         sceneView.showsStatistics = true
         
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        
+        view.addSubview(previewView)
+        
+        previewView.translatesAutoresizingMaskIntoConstraints = false
+        previewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        previewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }
 
@@ -326,15 +327,22 @@ extension ViewController {
     private func startDetection() {
         guard let buffer = currentBuffer else { return }
         
-        let requestHandler = VNImageRequestHandler(cvPixelBuffer: buffer, orientation: .right)
-        
-        visionQueue.async{
-            try? requestHandler.perform([self.predictionRequest])
-            guard let observation = self.predictionRequest.results?.first as? VNPixelBufferObservation else {
-                fatalError("Unexpected result type from VNCoreMLRequest")
+        handDetector.performDetection(inputBuffer: buffer) {outputBuffer, _ in
+            var previewImage: UIImage?
+            
+            defer{
+                DispatchQueue.main.async {
+                    self.previewView.image = previewImage
+                    //현재 버퍼 처리가 완료되면 다음 부터 데이터로 프로세싱하기 위해.
+                    self.currentBuffer = nil
+                }
             }
-            //currentBuffer가 다음 프레임에 대해서 처리할 수 있도록.
-            self.currentBuffer = nil
+            guard let outBuffer = outputBuffer else {
+                return
+            }
+            previewImage = UIImage(ciImage: CIImage(cvPixelBuffer: outBuffer))
         }
+        
+
     }
 }

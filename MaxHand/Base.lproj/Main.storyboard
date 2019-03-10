@@ -29,8 +29,21 @@
                                     <action selector="resetButton" destination="BV1-FR-VrT" eventType="touchUpInside" id="bGn-yQ-dcP"/>
                                 </connections>
                             </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="0pR-im-2hT">
+                                <rect key="frame" x="280" y="46" width="79" height="29"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="79" id="rcP-Pd-P6h"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="One"/>
+                                    <segment title="Mult"/>
+                                </segments>
+                                <connections>
+                                    <action selector="oneMultSegButtonValueChangeAction:" destination="BV1-FR-VrT" eventType="valueChanged" id="vFd-eZ-zhC"/>
+                                </connections>
+                            </segmentedControl>
                             <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qkj-vg-vGF">
-                                <rect key="frame" x="0.0" y="694" width="375" height="47"/>
+                                <rect key="frame" x="0.0" y="82" width="375" height="47"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="DPC-Sb-wD7">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="47"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -57,26 +70,13 @@
                                 </view>
                                 <blurEffect style="light"/>
                             </visualEffectView>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="0pR-im-2hT">
-                                <rect key="frame" x="280" y="45" width="79" height="29"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="79" id="rcP-Pd-P6h"/>
-                                </constraints>
-                                <segments>
-                                    <segment title="One"/>
-                                    <segment title="Mult"/>
-                                </segments>
-                                <connections>
-                                    <action selector="oneMultSegButtonValueChangeAction:" destination="BV1-FR-VrT" eventType="valueChanged" id="vFd-eZ-zhC"/>
-                                </connections>
-                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Qkj-vg-vGF" firstAttribute="centerX" secondItem="BrB-h1-WRS" secondAttribute="centerX" id="51E-Wb-UZ2"/>
                             <constraint firstItem="Qkj-vg-vGF" firstAttribute="trailing" secondItem="BrB-h1-WRS" secondAttribute="trailing" id="ECi-nw-vpA"/>
                             <constraint firstItem="0pR-im-2hT" firstAttribute="trailing" secondItem="U0K-SW-4ec" secondAttribute="trailingMargin" id="FDT-eM-OhL"/>
-                            <constraint firstItem="fQZ-KI-GVf" firstAttribute="bottom" secondItem="Qkj-vg-vGF" secondAttribute="bottom" constant="37" id="GB7-LK-i5R"/>
+                            <constraint firstItem="fQZ-KI-GVf" firstAttribute="bottom" secondItem="Qkj-vg-vGF" secondAttribute="bottom" constant="649" id="GB7-LK-i5R"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" id="GsS-dJ-CKf"/>
                             <constraint firstItem="0pR-im-2hT" firstAttribute="leading" secondItem="k0A-e5-dep" secondAttribute="trailing" constant="73" id="Uvh-FD-8wg"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="bottom" secondItem="fQZ-KI-GVf" secondAttribute="bottom" id="VpT-BR-CcM"/>
