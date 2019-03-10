@@ -28,7 +28,6 @@ class ViewController: UIViewController {
     var currentBuffer: CVPixelBuffer?
     var previewView = UIImageView()
     let handDetector = HandDetector()
-    let touchNode = TouchNode()
 
     
     @IBAction func resetButton(){
@@ -340,7 +339,6 @@ extension ViewController {
                     //현재 버퍼 처리가 완료되면 다음 부터 데이터로 프로세싱하기 위해.
                     self.currentBuffer = nil
                     
-                    self.touchNode.isHidden = true
                     
                     guard let tipPoint = normalizedFingerTip else {
                         return
@@ -357,9 +355,6 @@ extension ViewController {
                         print(maxNode)
                         maxNode.spin()
                     }
-                    
-                    
-                    
                     
                 }
             }

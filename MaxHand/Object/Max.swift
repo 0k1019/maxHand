@@ -13,13 +13,44 @@ class Max: SCNNode {
     var animating: Bool = false
     let patrolDistance: Float = 6
     var walking: Bool = false
+    static private let speedFactor: CGFloat = 2.0
+
+    
     override init(){
         super.init()
         self.addChildNode(loadedContentForAsset(named: "max", directory: "character"))
+        loadAnimations()
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private func loadAnimations() {
+        
+        let model = self
+        
+        let idleAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_idle.scn")
+        model.addAnimationPlayer(idleAnimation, forKey: "idle")
+        idleAnimation.play()
+        
+        let walkAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_walk.scn")
+        walkAnimation.speed = Max.speedFactor
+        walkAnimation.stop()
+        model.addAnimationPlayer(walkAnimation, forKey: "walk")
+        
+        let jumpAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_jump.scn")
+        jumpAnimation.animation.isRemovedOnCompletion = true
+        jumpAnimation.stop()
+        model.addAnimationPlayer(jumpAnimation, forKey: "jump")
+        
+        let spinAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_spin.scn")
+        spinAnimation.animation.isRemovedOnCompletion = false
+        spinAnimation.speed = 1.5
+        spinAnimation.stop()
+        model.addAnimationPlayer(spinAnimation, forKey: "spin")
+        
+    }
+    
     func animate() {
         if animating{return}
         animating = true
@@ -75,5 +106,23 @@ class Max: SCNNode {
         let rotateHalf = SCNAction.rotateBy(x: 0, y: .pi, z: 0, duration: 0)
         runAction(rotateHalf)
     }
+    func spin(){
+        self.animationPlayer(forKey: "spin")?.play()
+        print("spin")
+    }
     
+    class func loadAnimation(fromSceneNamed sceneName: String) -> SCNAnimationPlayer {
+        
+        let scene = SCNScene( named: sceneName )!
+        // find top level animation
+        var animationPlayer: SCNAnimationPlayer! = nil
+        scene.rootNode.enumerateChildNodes { (child, stop) in
+            if !child.animationKeys.isEmpty {
+                animationPlayer = child.animationPlayer(forKey: child.animationKeys[0])
+                stop.pointee = true
+            }
+        }
+        return animationPlayer
+        
+    }
 }
