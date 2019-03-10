@@ -28,6 +28,8 @@ class ViewController: UIViewController {
     var currentBuffer: CVPixelBuffer?
     var previewView = UIImageView()
     let handDetector = HandDetector()
+    let touchNode = TouchNode()
+
     
     @IBAction func resetButton(){
         resetTracking();
@@ -39,7 +41,7 @@ class ViewController: UIViewController {
     @IBAction func oneMultSegButtonValueChangeAction(_ sender: Any) {
         if (oneMultSegButton.selectedSegmentIndex == 0){
             self.isOneCharaterMode = true
-            let rootnode = sceneView.scene.rootNode
+            let rootnode = self.sceneView.scene.rootNode
             rootnode.enumerateChildNodes { (node, stop) in
                 if (node.name == "planeNode"){
                     node.removeFromParentNode()
@@ -48,7 +50,7 @@ class ViewController: UIViewController {
         } else{
             self.isOneCharaterMode = false
             self.isDetectPlane = false
-            let rootnode = sceneView.scene.rootNode
+            let rootnode = self.sceneView.scene.rootNode
             rootnode.enumerateChildNodes { (node, stop) in
                 if (node.name == "planeNode"){
                     node.removeFromParentNode()
@@ -112,6 +114,7 @@ class ViewController: UIViewController {
         guard let plane = sceneView.scene.rootNode.childNode(withName: nodeEnum.plane.rawValue, recursively: true)
             else {print("return")
                 return}
+        max.name = "max"
         plane.addChildNode(max)
         sceneView.scene.rootNode.addChildNode(max)
     }
@@ -329,18 +332,42 @@ extension ViewController {
         
         handDetector.performDetection(inputBuffer: buffer) {outputBuffer, _ in
             var previewImage: UIImage?
+            var normalizedFingerTip: CGPoint?
             
             defer{
                 DispatchQueue.main.async {
                     self.previewView.image = previewImage
                     //현재 버퍼 처리가 완료되면 다음 부터 데이터로 프로세싱하기 위해.
                     self.currentBuffer = nil
+                    
+                    self.touchNode.isHidden = true
+                    
+                    guard let tipPoint = normalizedFingerTip else {
+                        return
+                    }
+                    
+                    let imageFingerPoint = VNImagePointForNormalizedPoint(tipPoint, Int(self.view.bounds.size.width), Int(self.view.bounds.size.height))
+                    
+                    let hitTestResults = self.sceneView.hitTest(imageFingerPoint)
+                    guard let hitTestResult = hitTestResults.first else {
+                        return
+                    }
+//                    print(hitTestResults)
+                    if let node = hitTestResults.first?.node, let maxNode = node.topmost(until: self.sceneView.scene.rootNode) as? Max {
+                        print(maxNode)
+                        maxNode.spin()
+                    }
+                    
+                    
+                    
+                    
                 }
             }
             guard let outBuffer = outputBuffer else {
                 return
             }
             previewImage = UIImage(ciImage: CIImage(cvPixelBuffer: outBuffer))
+            normalizedFingerTip = outBuffer.searchTopPoint()
         }
         
 
