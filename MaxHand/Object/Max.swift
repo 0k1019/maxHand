@@ -13,6 +13,7 @@ class Max: SCNNode {
     var animating: Bool = false
     let patrolDistance: Float = 6
     var walking: Bool = false
+    var spining: Bool = false
     static private let speedFactor: CGFloat = 2.0
 
     
@@ -107,7 +108,11 @@ class Max: SCNNode {
         runAction(rotateHalf)
     }
     func spin(){
+        if spining{ return }
+        spining = true
+        
         self.animationPlayer(forKey: "spin")?.play()
+    
         print("spin")
     }
     

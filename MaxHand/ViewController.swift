@@ -30,6 +30,7 @@ class ViewController: UIViewController {
     let handDetector = HandDetector()
 
     
+    
     @IBAction func resetButton(){
         resetTracking();
         sceneController.removeAllMax();
@@ -332,14 +333,14 @@ extension ViewController {
         handDetector.performDetection(inputBuffer: buffer) {outputBuffer, _ in
             var previewImage: UIImage?
             var normalizedFingerTip: CGPoint?
+            var max: Max = Max()
             
             defer{
                 DispatchQueue.main.async {
                     self.previewView.image = previewImage
                     //현재 버퍼 처리가 완료되면 다음 부터 데이터로 프로세싱하기 위해.
                     self.currentBuffer = nil
-                    
-                    
+
                     guard let tipPoint = normalizedFingerTip else {
                         return
                     }
@@ -350,11 +351,18 @@ extension ViewController {
                     guard let hitTestResult = hitTestResults.first else {
                         return
                     }
-//                    print(hitTestResults)
-                    if let node = hitTestResults.first?.node, let maxNode = node.topmost(until: self.sceneView.scene.rootNode) as? Max {
+                    
+                    if let node = hitTestResults.first?.node, let maxNode = node.topmost(until: self.sceneView.scene.rootNode) as? Max{
+                        DispatchQueue.main.async {
+                            let generator = UIImpactFeedbackGenerator(style: .heavy)
+                            generator.impactOccurred()
+                        }
+                        max = maxNode
                         print(maxNode)
                         maxNode.spin()
+                        print(maxNode.hasActions)
                     }
+                    max.spining = false
                     
                 }
             }
