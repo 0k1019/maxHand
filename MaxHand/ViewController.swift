@@ -28,8 +28,12 @@ class ViewController: UIViewController {
     var currentBuffer: CVPixelBuffer?
     var previewView = UIImageView()
     let handDetector = HandDetector()
+    var spinning: Bool = false;
 
     
+    @IBAction func spinResetButton(_ sender: Any) {
+        self.spinning = false;
+    }
     
     @IBAction func resetButton(){
         resetTracking();
@@ -157,7 +161,6 @@ extension ViewController: ARSCNViewDelegate {
         node.addChildNode(planeNode)
         //each ancor has an unique identifier
         detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
-//        print(detectedPlanes)
     }
     
 //    func renderer(_ renderer: SCNSceneRenderer, willUpdate node: SCNNode, for anchor: ARAnchor) {
@@ -166,30 +169,7 @@ extension ViewController: ARSCNViewDelegate {
     
     // - Tag: UpdateARContent
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-//        guard let planeAnchor = anchor as? ARPlaneAnchor
-//        else {
-////            print("planeAnchor((((((((()))) )))))")
-//            return
-//        }
-//        guard let planeNode = detectedPlanes[planeAnchor.identifier.uuidString]
-//        else {
-////            print("planeNode(((((((((((")
-//            return
-//        }
-//
-//        guard let planeGeometry = planeNode.geometry as? SCNPlane
-//            else{
-////                print("planeGeometry")
-//                return
-//        }
-//
-//        planeGeometry.width = CGFloat(planeAnchor.extent.x)
-//        planeGeometry.height = CGFloat(planeAnchor.extent.z)
-//
-//        let x = planeAnchor.center.x
-//        let y = planeAnchor.center.y
-//        let z = planeAnchor.center.z
-//        planeNode.position = SCNVector3Make(x,y,z)
+
 
     }
 }
@@ -202,6 +182,7 @@ extension ViewController: ARSessionDelegate{
             return
         }
         currentBuffer = frame.capturedImage
+        print("session")
         startDetection()
     }
     
@@ -329,7 +310,6 @@ extension ViewController {
     
     private func startDetection() {
         guard let buffer = currentBuffer else { return }
-        
         handDetector.performDetection(inputBuffer: buffer) {outputBuffer, _ in
             var previewImage: UIImage?
             var normalizedFingerTip: CGPoint?
@@ -353,16 +333,21 @@ extension ViewController {
                     }
                     
                     if let node = hitTestResults.first?.node, let maxNode = node.topmost(until: self.sceneView.scene.rootNode) as? Max{
-                        DispatchQueue.main.async {
-                            let generator = UIImpactFeedbackGenerator(style: .heavy)
-                            generator.impactOccurred()
+                        
+                        if (self.spinning == false) {
+                            DispatchQueue.main.async {
+                                let generator = UIImpactFeedbackGenerator(style: .heavy)
+                                generator.impactOccurred()
+                            }
+                            self.spinning = true
+                            max = maxNode
+                            print(maxNode)
+                            maxNode.spin()
+                            print(maxNode.isPaused)
                         }
-                        max = maxNode
-                        print(maxNode)
-                        maxNode.spin()
-                        print(maxNode.hasActions)
                     }
                     max.spining = false
+                    
                     
                 }
             }

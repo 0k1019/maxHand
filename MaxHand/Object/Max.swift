@@ -112,7 +112,8 @@ class Max: SCNNode {
         spining = true
         
         self.animationPlayer(forKey: "spin")?.play()
-    
+        print(self.isPaused)
+
         print("spin")
     }
     

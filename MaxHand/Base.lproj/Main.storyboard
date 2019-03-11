@@ -42,6 +42,14 @@
                                     <action selector="oneMultSegButtonValueChangeAction:" destination="BV1-FR-VrT" eventType="valueChanged" id="vFd-eZ-zhC"/>
                                 </connections>
                             </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kYu-Pb-Zwa">
+                                <rect key="frame" x="8" y="44" width="44" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Spin R"/>
+                                <connections>
+                                    <action selector="spinResetButton:" destination="BV1-FR-VrT" eventType="touchUpInside" id="odK-Qg-Fzw"/>
+                                </connections>
+                            </button>
                             <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qkj-vg-vGF">
                                 <rect key="frame" x="0.0" y="82" width="375" height="47"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="DPC-Sb-wD7">
