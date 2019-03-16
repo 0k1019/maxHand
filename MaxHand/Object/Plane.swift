@@ -11,7 +11,7 @@ import SceneKit
 
 
 class Plane: SCNNode{
-    var isMax:Bool = false
+
     init(width: CGFloat = 0.6, height: CGFloat = 0.3, content: Any, doubleSided: Bool, horizontal: Bool) {
         
         super.init()
@@ -47,15 +47,11 @@ class Plane: SCNNode{
         if doubleSided{
             material.isDoubleSided = true
         }
-        print(self.worldPosition)
-        print(self.worldTransform)
         //5. By Default An SCNPlane Is Rendered Vertically So If We Need It Horizontal We Need To Rotate It
         if horizontal{
             self.transform = SCNMatrix4MakeRotation(-Float.pi / 2, 1, 0, 0)
         }
-        print(self.worldPosition)
-        print(self.worldTransform)
-        
+    
     }
     required init?(coder aDecoder: NSCoder) { fatalError("Plane Node Coder Not Implemented") }
 }
