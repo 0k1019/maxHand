@@ -80,6 +80,7 @@ class ViewController: UIViewController {
             let z = translation.z
             let max = Max()
             max.position = SCNVector3(x,y,z)
+            max.look(at: SCNVector3((currentCameraTransform?.columns.3.x)!, y, (currentCameraTransform?.columns.3.z)!))
             sceneView.scene.rootNode.addChildNode(max)
             node.removeFromParentNode()
             break
