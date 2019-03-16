@@ -92,12 +92,12 @@
 		2AF7B41221ECAB0A00A868B8 /* MaxHand */ = {
 			isa = PBXGroup;
 			children = (
+				2AF7B41321ECAB0A00A868B8 /* AppDelegate.swift */,
 				2A6A0AFB22341A460080C0BA /* CoreML */,
 				2AF7B42D21ECB8FF00A868B8 /* Controller */,
 				2AF7B42721ECB50A00A868B8 /* Object */,
 				2AF7B43521EDCB7C00A868B8 /* Scene */,
 				2AF7B43221ECBA5900A868B8 /* Utility */,
-				2AF7B41321ECAB0A00A868B8 /* AppDelegate.swift */,
 				2AF7B41721ECAB0A00A868B8 /* ViewController.swift */,
 				2AF7B41921ECAB0A00A868B8 /* Main.storyboard */,
 				2AF7B44A21EE03BC00A868B8 /* Assets.scnassets */,

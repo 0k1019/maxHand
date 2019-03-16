@@ -15,22 +15,20 @@ import Vision
 class ViewController: UIViewController {
 
     @IBOutlet weak var sceneView: ARSCNView!
-    @IBOutlet weak var sessionInfoView: UIView!
     @IBOutlet weak var sessionInfoLabel: UILabel!
-    @IBOutlet weak var oneMultSegButton: UISegmentedControl!
+    @IBOutlet weak var oneOrMultiMaxModeSegmentedControl: UISegmentedControl!
     
-    var sceneController = MaxScene()
-    var didInitializeMax: Bool = false
+    var sceneController = MaxScene()//struct
+    let handDetector = HandDetector()//class
+    
+    var isOneCharaterMode: Bool = true
     var isDetectPlane: Bool = false
     var detectedPlanes: [String : SCNNode] = [:]
-    var isOneCharaterMode: Bool = true
     
     var currentBuffer: CVPixelBuffer?
-    var previewView = UIImageView()
-    let handDetector = HandDetector()
+    var handPreviewView = UIImageView()
     var spinning: Bool = false;
 
-    
     @IBAction func spinResetButton(_ sender: Any) {
         self.spinning = false;
     }
@@ -38,12 +36,12 @@ class ViewController: UIViewController {
     @IBAction func resetButton(){
         resetTracking();
         sceneController.removeAllMax();
-        didInitializeMax = false;
         isDetectPlane = false;
         detectedPlanes = [:]
     }
-    @IBAction func oneMultSegButtonValueChangeAction(_ sender: Any) {
-        if (oneMultSegButton.selectedSegmentIndex == 0){
+    
+    @IBAction func oneOrMultiMaxModeSegmentedControlValueChangeAction(_ sender: Any) {
+        if (oneOrMultiMaxModeSegmentedControl.selectedSegmentIndex == 0){
             self.isOneCharaterMode = true
             let rootnode = self.sceneView.scene.rootNode
             rootnode.enumerateChildNodes { (node, stop) in
@@ -83,9 +81,8 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpSceneView()
-        
     }
-    // - TAG: StartARSession
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
@@ -103,7 +100,6 @@ class ViewController: UIViewController {
         // Release any cached data, images, etc that aren't in use.
     }
     @objc func didTapScreen(recognizer: UITapGestureRecognizer) {
-        print("touch")
         let tapLocation = recognizer.location(in: sceneView)
         let hitTestResults = sceneView.hitTest(tapLocation, types: .existingPlaneUsingExtent)
         guard let hitTestResult = hitTestResults.first
@@ -256,7 +252,7 @@ extension ViewController: ARSessionDelegate{
             
         }
         sessionInfoLabel.text = message
-        sessionInfoView.isHidden = message.isEmpty
+        
     }
     
     private func resetTracking() {
@@ -290,11 +286,11 @@ extension ViewController: ARSessionDelegate{
         
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
-        view.addSubview(previewView)
+        view.addSubview(handPreviewView)
         
-        previewView.translatesAutoresizingMaskIntoConstraints = false
-        previewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        previewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        handPreviewView.translatesAutoresizingMaskIntoConstraints = false
+        handPreviewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        handPreviewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }
 
@@ -317,7 +313,7 @@ extension ViewController {
             
             defer{
                 DispatchQueue.main.async {
-                    self.previewView.image = previewImage
+                    self.handPreviewView.image = previewImage
                     //현재 버퍼 처리가 완료되면 다음 부터 데이터로 프로세싱하기 위해.
                     self.currentBuffer = nil
 
