@@ -21,6 +21,9 @@
                             <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BrB-h1-WRS">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="778"/>
                                 <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="4KU-TE-xLb" appends="YES" id="Hid-1E-oWc"/>
+                                </connections>
                             </arscnView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k0A-e5-dep">
                                 <rect key="frame" x="177" y="44" width="30" height="30"/>
@@ -88,6 +91,12 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="4KU-TE-xLb">
+                    <connections>
+                        <action selector="tapPlane:" destination="BV1-FR-VrT" id="6wc-aV-TFj"/>
+                        <outlet property="delegate" destination="BV1-FR-VrT" id="8Xq-Z3-f5f"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="132" y="102.70935960591133"/>
         </scene>

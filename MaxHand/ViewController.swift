@@ -61,6 +61,27 @@ class ViewController: UIViewController {
 
         }
     }
+
+    @IBAction func tapPlane(_ sender: UITapGestureRecognizer) {
+        let tapLocation = sender.location(in: sceneView)
+        let hitTestResults = sceneView.hitTest(tapLocation, types: .existingPlaneUsingExtent)
+        guard let hitTestResult = hitTestResults.first
+            else { return }
+        
+        let translation = hitTestResult.worldTransform.columns.3
+        let x = translation.x
+        let y = translation.y
+        let z = translation.z
+        let max = Max()
+        max.position = SCNVector3(x,y,z)
+        guard let plane = sceneView.scene.rootNode.childNode(withName: nodeEnum.plane.rawValue, recursively: true)
+            else {print("return")
+                return}
+        max.name = "max"
+        plane.addChildNode(max)
+        sceneView.scene.rootNode.addChildNode(max)
+    }
+    
     //시스템에의해 자동으로 호출, 리소스 초기화나 초기 화면 구성용도, 화면 처음 만들어질 때 한 번만 실행.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,10 +93,6 @@ class ViewController: UIViewController {
         if let scene = sceneController.scene {
             sceneView.scene = scene
         }
-        
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.didTapScreen))
-        self.view.addGestureRecognizer(tapRecognizer)
-        
     }
     // 뷰가 이제 나타날 거라는 신호
     override func viewWillAppear(_ animated: Bool) {
@@ -99,25 +116,7 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-    @objc func didTapScreen(recognizer: UITapGestureRecognizer) {
-        let tapLocation = recognizer.location(in: sceneView)
-        let hitTestResults = sceneView.hitTest(tapLocation, types: .existingPlaneUsingExtent)
-        guard let hitTestResult = hitTestResults.first
-            else { return }
-
-        let translation = hitTestResult.worldTransform.columns.3
-        let x = translation.x
-        let y = translation.y
-        let z = translation.z
-        let max = Max()
-        max.position = SCNVector3(x,y,z)
-        guard let plane = sceneView.scene.rootNode.childNode(withName: nodeEnum.plane.rawValue, recursively: true)
-            else {print("return")
-                return}
-        max.name = "max"
-        plane.addChildNode(max)
-        sceneView.scene.rootNode.addChildNode(max)
-    }
+    
     
 }
 extension ViewController: ARSCNViewDelegate {
@@ -178,7 +177,6 @@ extension ViewController: ARSessionDelegate{
             return
         }
         currentBuffer = frame.capturedImage
-        print("session")
         startDetection()
     }
     
