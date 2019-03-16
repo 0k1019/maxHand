@@ -11,6 +11,7 @@ import SceneKit
 
 
 class Plane: SCNNode{
+    var isMax:Bool = false
     init(width: CGFloat = 0.6, height: CGFloat = 0.3, content: Any, doubleSided: Bool, horizontal: Bool) {
         
         super.init()

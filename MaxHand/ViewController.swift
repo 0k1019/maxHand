@@ -62,24 +62,31 @@ class ViewController: UIViewController {
         }
     }
 
-    @IBAction func tapPlane(_ sender: UITapGestureRecognizer) {
-        let tapLocation = sender.location(in: sceneView)
-        let hitTestResults = sceneView.hitTest(tapLocation, types: .existingPlaneUsingExtent)
-        guard let hitTestResult = hitTestResults.first
-            else { return }
-        
-        let translation = hitTestResult.worldTransform.columns.3
-        let x = translation.x
-        let y = translation.y
-        let z = translation.z
-        let max = Max()
-        max.position = SCNVector3(x,y,z)
-        guard let plane = sceneView.scene.rootNode.childNode(withName: nodeEnum.plane.rawValue, recursively: true)
-            else {print("return")
-                return}
-        max.name = "max"
-        plane.addChildNode(max)
-        sceneView.scene.rootNode.addChildNode(max)
+    @IBAction func tapPlane(_ gesture: UITapGestureRecognizer) {
+        let tapLocation = gesture.location(in: self.sceneView)
+        guard let hitTest = self.sceneView.hitTest(tapLocation).first else {return}
+       
+        let hitNode = hitTest.node
+        print("hitTest")
+        print(hitTest)
+        print("hitNode")
+        print(hitNode)
+
+        switch hitNode.name {
+        case "Plane":
+            let node = hitNode;
+            let translation = node.worldPosition
+            let x = translation.x
+            let y = translation.y
+            let z = translation.z
+            let max = Max()
+            max.position = SCNVector3(x,y,z)
+            sceneView.scene.rootNode.addChildNode(max)
+            node.removeFromParentNode()
+            break
+        default:
+            break
+        }
     }
     
     //시스템에의해 자동으로 호출, 리소스 초기화나 초기 화면 구성용도, 화면 처음 만들어질 때 한 번만 실행.
@@ -144,14 +151,15 @@ extension ViewController: ARSCNViewDelegate {
         
         let maxExtentValue = maxExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.y)
 
-        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIImage(named: "square") as Any, doubleSided: false, horizontal: true)
+//        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIImage(named: "square") as Any, doubleSided: false, horizontal: true)
+        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown as Any, doubleSided: false, horizontal: true)
 
         let x = planeAnchor.center.x
         let y = planeAnchor.center.y
         let z = planeAnchor.center.z
         planeNode.position = SCNVector3Make(x,y,z)
         planeNode.name = nodeEnum.plane.rawValue
-        
+        print(planeNode)
         node.name = "planeNode"
         node.addChildNode(planeNode)
         //each ancor has an unique identifier
