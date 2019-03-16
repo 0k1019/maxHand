@@ -108,13 +108,9 @@ class Max: SCNNode {
         runAction(rotateHalf)
     }
     func spin(){
-        if spining{ return }
-        spining = true
         
         self.animationPlayer(forKey: "spin")?.play()
-        print(self.isPaused)
 
-        print("spin")
     }
     
     class func loadAnimation(fromSceneNamed sceneName: String) -> SCNAnimationPlayer {

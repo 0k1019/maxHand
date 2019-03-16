@@ -26,6 +26,7 @@ class Plane: SCNNode{
             
             //The Material Will Be A UIColor
             material.diffuse.contents = colour
+        
             
         }else if let image = content as? UIImage{
             
@@ -46,11 +47,14 @@ class Plane: SCNNode{
         if doubleSided{
             material.isDoubleSided = true
         }
-        
+        print(self.worldPosition)
+        print(self.worldTransform)
         //5. By Default An SCNPlane Is Rendered Vertically So If We Need It Horizontal We Need To Rotate It
         if horizontal{
             self.transform = SCNMatrix4MakeRotation(-Float.pi / 2, 1, 0, 0)
         }
+        print(self.worldPosition)
+        print(self.worldTransform)
         
     }
     required init?(coder aDecoder: NSCoder) { fatalError("Plane Node Coder Not Implemented") }

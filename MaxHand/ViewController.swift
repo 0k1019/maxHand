@@ -149,15 +149,15 @@ extension ViewController: ARSCNViewDelegate {
             generator.impactOccurred()
         }
         
-        let maxExtentValue = maxExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.y)
-
-//        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIImage(named: "square") as Any, doubleSided: false, horizontal: true)
-        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown as Any, doubleSided: false, horizontal: true)
+        let maxExtentValue = minExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.z)
+        
+        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown.withAlphaComponent(0.7) as Any, doubleSided: false, horizontal: true)
 
         let x = planeAnchor.center.x
         let y = planeAnchor.center.y
         let z = planeAnchor.center.z
         planeNode.position = SCNVector3Make(x,y,z)
+        
         planeNode.name = nodeEnum.plane.rawValue
         print(planeNode)
         node.name = "planeNode"
@@ -186,9 +186,22 @@ extension ViewController: ARSessionDelegate{
         }
         currentBuffer = frame.capturedImage
         startDetection()
+        
     }
     
+    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+        guard let frame = session.currentFrame else { return }
+        updateSessionInfoLabel(for: frame, trackingState: frame.camera.trackingState)
+    }
     
+    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
+        guard let frame = session.currentFrame else { return }
+        updateSessionInfoLabel(for: frame, trackingState: frame.camera.trackingState)
+    }
+    
+    func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+        updateSessionInfoLabel(for: session.currentFrame!, trackingState: camera.trackingState)
+    }
     // MARK: - ARSessionObserver
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -324,17 +337,18 @@ extension ViewController {
                     self.currentBuffer = nil
 
                     guard let tipPoint = normalizedFingerTip else {
+                        self.spinning = false
                         return
                     }
                     
                     let imageFingerPoint = VNImagePointForNormalizedPoint(tipPoint, Int(self.view.bounds.size.width), Int(self.view.bounds.size.height))
                     
-                    let hitTestResults = self.sceneView.hitTest(imageFingerPoint)
-                    guard let hitTestResult = hitTestResults.first else {
-                        return
-                    }
-                    
-                    if let node = hitTestResults.first?.node, let maxNode = node.topmost(until: self.sceneView.scene.rootNode) as? Max{
+                    guard let hitTest = self.sceneView.hitTest(imageFingerPoint).first else {return}
+
+                    let hitNode = hitTest.node
+                    print(hitNode)
+                    print(hitNode.childNodes)
+                    if let maxNode = hitNode.topmost(until: self.sceneView.scene.rootNode) as? Max{
                         
                         if (self.spinning == false) {
                             DispatchQueue.main.async {
@@ -342,15 +356,11 @@ extension ViewController {
                                 generator.impactOccurred()
                             }
                             self.spinning = true
-                            max = maxNode
                             print(maxNode)
+                            print(maxNode.animationPlayer(forKey: "spin") as Any)
                             maxNode.spin()
-                            print(maxNode.isPaused)
                         }
                     }
-                    max.spining = false
-                    
-                    
                 }
             }
             guard let outBuffer = outputBuffer else {
