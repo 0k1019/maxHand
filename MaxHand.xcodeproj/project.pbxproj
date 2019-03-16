@@ -19,7 +19,6 @@
 		2AF7B41B21ECAB0A00A868B8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2AF7B41921ECAB0A00A868B8 /* Main.storyboard */; };
 		2AF7B41D21ECAB0B00A868B8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AF7B41C21ECAB0B00A868B8 /* Assets.xcassets */; };
 		2AF7B42021ECAB0B00A868B8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2AF7B41E21ECAB0B00A868B8 /* LaunchScreen.storyboard */; };
-		2AF7B43421EDC7E600A868B8 /* MaxScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B43321EDC7E600A868B8 /* MaxScene.swift */; };
 		2AF7B43721EDCBB300A868B8 /* Max.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B43621EDCBB300A868B8 /* Max.swift */; };
 		2AF7B43F21EDECFF00A868B8 /* NodeUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B43E21EDECFF00A868B8 /* NodeUtils.swift */; };
 		2AF7B44121EDF68700A868B8 /* SCNVector3+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B44021EDF68600A868B8 /* SCNVector3+Extensions.swift */; };
@@ -43,7 +42,6 @@
 		2AF7B41C21ECAB0B00A868B8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2AF7B41F21ECAB0B00A868B8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2AF7B42121ECAB0B00A868B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2AF7B43321EDC7E600A868B8 /* MaxScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaxScene.swift; sourceTree = "<group>"; };
 		2AF7B43621EDCBB300A868B8 /* Max.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Max.swift; sourceTree = "<group>"; };
 		2AF7B43E21EDECFF00A868B8 /* NodeUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeUtils.swift; sourceTree = "<group>"; };
 		2AF7B44021EDF68600A868B8 /* SCNVector3+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SCNVector3+Extensions.swift"; sourceTree = "<group>"; };
@@ -141,7 +139,6 @@
 		2AF7B43521EDCB7C00A868B8 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
-				2AF7B43321EDC7E600A868B8 /* MaxScene.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -219,7 +216,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2AF7B43421EDC7E600A868B8 /* MaxScene.swift in Sources */,
 				2AF7B44521EDF6D900A868B8 /* Node+Extensions.swift in Sources */,
 				2AF5B63F222BA7FE00A039EC /* Plane.swift in Sources */,
 				2A6A0B01223544A80080C0BA /* HandModel.mlmodel in Sources */,

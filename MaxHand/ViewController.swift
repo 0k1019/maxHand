@@ -18,7 +18,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var sessionInfoLabel: UILabel!
     @IBOutlet weak var oneOrMultiMaxModeSegmentedControl: UISegmentedControl!
     
-    var sceneController = MaxScene()//struct
     let handDetector = HandDetector()//class
     
     var isOneCharaterMode: Bool = true
@@ -26,6 +25,7 @@ class ViewController: UIViewController {
     var detectedPlanes: [String : SCNNode] = [:]
     
     var currentBuffer: CVPixelBuffer?
+    var currentCameraTransform:simd_float4x4?
     var handPreviewView = UIImageView()
     var spinning: Bool = false;
 
@@ -35,7 +35,6 @@ class ViewController: UIViewController {
     
     @IBAction func resetButton(){
         resetTracking();
-        sceneController.removeAllMax();
         isDetectPlane = false;
         detectedPlanes = [:]
     }
@@ -94,12 +93,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         // Set the view's delegate
-        sceneView.delegate = self
+        self.sceneView.delegate = self
 
-        // Create a new scene
-        if let scene = sceneController.scene {
-            sceneView.scene = scene
-        }
     }
     // 뷰가 이제 나타날 거라는 신호
     override func viewWillAppear(_ animated: Bool) {
@@ -184,6 +179,7 @@ extension ViewController: ARSessionDelegate{
         guard currentBuffer == nil, case .normal = frame.camera.trackingState else {
             return
         }
+        currentCameraTransform = frame.camera.transform
         currentBuffer = frame.capturedImage
         startDetection()
         
@@ -328,7 +324,6 @@ extension ViewController {
         handDetector.performDetection(inputBuffer: buffer) {outputBuffer, _ in
             var previewImage: UIImage?
             var normalizedFingerTip: CGPoint?
-            var max: Max = Max()
             
             defer{
                 DispatchQueue.main.async {
@@ -369,7 +364,5 @@ extension ViewController {
             previewImage = UIImage(ciImage: CIImage(cvPixelBuffer: outBuffer))
             normalizedFingerTip = outBuffer.searchTopPoint()
         }
-        
-
     }
 }
