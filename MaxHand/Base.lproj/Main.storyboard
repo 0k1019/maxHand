@@ -48,28 +48,21 @@
                                     <action selector="oneOrMultiMaxModeSegmentedControlValueChangeAction:" destination="BV1-FR-VrT" eventType="valueChanged" id="THW-IZ-Ohu"/>
                                 </connections>
                             </segmentedControl>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kYu-Pb-Zwa">
-                                <rect key="frame" x="8" y="44" width="44" height="30"/>
-                                <state key="normal" title="Spin R">
-                                    <color key="titleColor" red="1" green="0.52824708710000001" blue="0.3983143059" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="spinResetButton:" destination="BV1-FR-VrT" eventType="touchUpInside" id="odK-Qg-Fzw"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Pa-ua-RLg">
-                                <rect key="frame" x="0.0" y="82" width="158" height="21"/>
+                                <rect key="frame" x="0.0" y="82" width="375" height="21"/>
                                 <color key="backgroundColor" white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="158" id="cOD-Fm-qos"/>
+                                    <constraint firstAttribute="width" constant="375" id="cOD-Fm-qos"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="9PV-EB-1Iy">
-                                <rect key="frame" x="238" y="82" width="121" height="29"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="9PV-EB-1Iy">
+                                <rect key="frame" x="8" y="44" width="121" height="29"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="121" id="oTz-aQ-Y55"/>
+                                </constraints>
                                 <segments>
                                     <segment title="Instant"/>
                                     <segment title="Plane"/>
@@ -90,8 +83,8 @@
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="bottom" secondItem="fQZ-KI-GVf" secondAttribute="bottom" id="VpT-BR-CcM"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="trailing" secondItem="fQZ-KI-GVf" secondAttribute="trailing" id="XyZ-9z-H8e"/>
                             <constraint firstItem="0pR-im-2hT" firstAttribute="bottom" secondItem="k0A-e5-dep" secondAttribute="bottom" id="cM8-lb-dRO"/>
-                            <constraint firstItem="kYu-Pb-Zwa" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" constant="8" id="fay-qD-D6O"/>
-                            <constraint firstItem="2Pa-ua-RLg" firstAttribute="top" secondItem="kYu-Pb-Zwa" secondAttribute="bottom" constant="8" symbolic="YES" id="k2i-ni-Awa"/>
+                            <constraint firstItem="9PV-EB-1Iy" firstAttribute="top" secondItem="k0A-e5-dep" secondAttribute="top" id="dak-fG-mmh"/>
+                            <constraint firstItem="9PV-EB-1Iy" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" constant="8" id="emW-ug-c0O"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="top" secondItem="U0K-SW-4ec" secondAttribute="top" id="rJc-2c-zQA"/>
                             <constraint firstItem="0pR-im-2hT" firstAttribute="top" secondItem="fQZ-KI-GVf" secondAttribute="top" constant="2" id="xav-HR-LPs"/>
                         </constraints>

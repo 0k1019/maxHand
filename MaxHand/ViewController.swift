@@ -31,14 +31,21 @@ class ViewController: UIViewController {
     var handPreviewView = UIImageView()
     var spinning: Bool = false;
 
-    @IBAction func spinResetButton(_ sender: Any) {
-        self.spinning = false;
-    }
-    
     @IBAction func resetButton(){
         resetTracking();
-        isDetectPlane = false;
+        self.isDetectPlane = false;
+        self.isOneCharaterMode = true;
+        self.isInstantMode = true;
+        self.oneOrMultiMaxModeSegmentedControl.selectedSegmentIndex = 0
+        self.instantOrPlaneMaxAppearSegmentedControl.selectedSegmentIndex = 0
+        
         detectedPlanes = [:]
+        let rootnode = self.sceneView.scene.rootNode
+        rootnode.enumerateChildNodes { (node, stop) in
+            if (node.name == "planeNode"){
+                node.removeFromParentNode()
+            }
+        }
     }
     
     @IBAction func oneOrMultiMaxModeSegmentedControlValueChangeAction(_ sender: Any) {
@@ -78,15 +85,13 @@ class ViewController: UIViewController {
         guard let hitTest = self.sceneView.hitTest(tapLocation).first else {return}
        
         let hitNode = hitTest.node
-        print("hitTest")
-        print(hitTest)
-        print("hitNode")
-        print(hitNode)
 
         switch hitNode.name {
         case "Plane":
             let node = hitNode;
             let translation = node.worldPosition
+            print(node)
+            print(translation)
             let x = translation.x
             let y = translation.y
             let z = translation.z
@@ -104,10 +109,8 @@ class ViewController: UIViewController {
     //시스템에의해 자동으로 호출, 리소스 초기화나 초기 화면 구성용도, 화면 처음 만들어질 때 한 번만 실행.
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         // Set the view's delegate
         self.sceneView.delegate = self
-
     }
     // 뷰가 이제 나타날 거라는 신호
     override func viewWillAppear(_ animated: Bool) {
@@ -146,10 +149,9 @@ extension ViewController: ARSCNViewDelegate {
         if self.isDetectPlane { return }
         
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-        let x = planeAnchor.center.x
-        let y = planeAnchor.center.y
-        let z = planeAnchor.center.z
-
+        
+//        planeAnchor.transform.columns.3 이것이 진짜로 위치.
+        //node.addchildnode 했을때의 우치 비밀을 찾아야한다.
         if (isOneCharaterMode) {
             self.isDetectPlane = true
         } else {
@@ -162,23 +164,19 @@ extension ViewController: ARSCNViewDelegate {
         
         if self.isInstantMode {
             let max = Max()
-//            max.position = SCNVector3(x,y,z)
-            node.look(at: SCNVector3((currentCameraTransform?.columns.3.x)!, 0, (currentCameraTransform?.columns.3.z)!))
-            node.addChildNode(max)
-            
-            self.sceneView.scene.rootNode.addChildNode(node)
+            let pos = planeAnchor.transform.columns.3
+            max.position = SCNVector3(pos.x,pos.y, pos.z)
+            max.look(at: SCNVector3((currentCameraTransform?.columns.3.x)!, pos.y, (currentCameraTransform?.columns.3.z)!))
+            self.sceneView.scene.rootNode.addChildNode(max)
         }
         else{
             let maxExtentValue = minExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.z)
             
             let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown.withAlphaComponent(0.7) as Any, doubleSided: false, horizontal: true)
-            
-            planeNode.position = SCNVector3Make(x,y,z)
-            
             planeNode.name = nodeEnum.plane.rawValue
-            print(planeNode)
             node.name = "planeNode"
-            node.addChildNode(planeNode)
+            node.addChildNode(planeNode)//이경우 위치가 왜 잡히는지 확인 필요.
+        
             //each ancor has an unique identifier
             detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
         }
