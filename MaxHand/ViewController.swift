@@ -17,10 +17,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var sessionInfoLabel: UILabel!
     @IBOutlet weak var oneOrMultiMaxModeSegmentedControl: UISegmentedControl!
+    @IBOutlet weak var instantOrPlaneMaxAppearSegmentedControl: UISegmentedControl!
     
     let handDetector = HandDetector()//class
     
     var isOneCharaterMode: Bool = true
+    var isInstantMode: Bool = true
     var isDetectPlane: Bool = false
     var detectedPlanes: [String : SCNNode] = [:]
     
@@ -61,7 +63,17 @@ class ViewController: UIViewController {
         }
     }
 
+    @IBAction func instantOrPlaneMaxAppearSegmentedControlValueChangeAction(_ sender: Any) {
+        if(instantOrPlaneMaxAppearSegmentedControl.selectedSegmentIndex == 0){
+            self.isInstantMode = true
+        } else{
+            self.isInstantMode = false
+        }
+    
+    }
     @IBAction func tapPlane(_ gesture: UITapGestureRecognizer) {
+        if self.isInstantMode {return}
+        
         let tapLocation = gesture.location(in: self.sceneView)
         guard let hitTest = self.sceneView.hitTest(tapLocation).first else {return}
        
@@ -81,7 +93,7 @@ class ViewController: UIViewController {
             let max = Max()
             max.position = SCNVector3(x,y,z)
             max.look(at: SCNVector3((currentCameraTransform?.columns.3.x)!, y, (currentCameraTransform?.columns.3.z)!))
-            sceneView.scene.rootNode.addChildNode(max)
+            self.sceneView.scene.rootNode.addChildNode(max)
             node.removeFromParentNode()
             break
         default:
@@ -132,9 +144,12 @@ extension ViewController: ARSCNViewDelegate {
     /// - Tag: PlaceARContent
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         if self.isDetectPlane { return }
-
-        guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         
+        guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+        let x = planeAnchor.center.x
+        let y = planeAnchor.center.y
+        let z = planeAnchor.center.z
+
         if (isOneCharaterMode) {
             self.isDetectPlane = true
         } else {
@@ -145,21 +160,29 @@ extension ViewController: ARSCNViewDelegate {
             generator.impactOccurred()
         }
         
-        let maxExtentValue = minExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.z)
+        if self.isInstantMode {
+            let max = Max()
+//            max.position = SCNVector3(x,y,z)
+            node.look(at: SCNVector3((currentCameraTransform?.columns.3.x)!, 0, (currentCameraTransform?.columns.3.z)!))
+            node.addChildNode(max)
+            
+            self.sceneView.scene.rootNode.addChildNode(node)
+        }
+        else{
+            let maxExtentValue = minExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.z)
+            
+            let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown.withAlphaComponent(0.7) as Any, doubleSided: false, horizontal: true)
+            
+            planeNode.position = SCNVector3Make(x,y,z)
+            
+            planeNode.name = nodeEnum.plane.rawValue
+            print(planeNode)
+            node.name = "planeNode"
+            node.addChildNode(planeNode)
+            //each ancor has an unique identifier
+            detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
+        }
         
-        let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown.withAlphaComponent(0.7) as Any, doubleSided: false, horizontal: true)
-
-        let x = planeAnchor.center.x
-        let y = planeAnchor.center.y
-        let z = planeAnchor.center.z
-        planeNode.position = SCNVector3Make(x,y,z)
-        
-        planeNode.name = nodeEnum.plane.rawValue
-        print(planeNode)
-        node.name = "planeNode"
-        node.addChildNode(planeNode)
-        //each ancor has an unique identifier
-        detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
     }
     
 //    func renderer(_ renderer: SCNSceneRenderer, willUpdate node: SCNNode, for anchor: ARAnchor) {
@@ -345,7 +368,6 @@ extension ViewController {
                     print(hitNode)
                     print(hitNode.childNodes)
                     if let maxNode = hitNode.topmost(until: self.sceneView.scene.rootNode) as? Max{
-                        
                         if (self.spinning == false) {
                             DispatchQueue.main.async {
                                 let generator = UIImpactFeedbackGenerator(style: .heavy)
@@ -353,7 +375,6 @@ extension ViewController {
                             }
                             self.spinning = true
                             print(maxNode)
-                            print(maxNode.animationPlayer(forKey: "spin") as Any)
                             maxNode.spin()
                         }
                     }
