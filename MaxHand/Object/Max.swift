@@ -110,6 +110,12 @@ class Max: SCNNode {
     func spin(){
         self.animationPlayer(forKey: "spin")?.play()
     }
+    func walk(){
+        self.animationPlayer(forKey: "walk")?.play()
+    }
+    func walkStop(){
+        self.animationPlayer(forKey: "walk")?.stop()
+    }
     
     class func loadAnimation(fromSceneNamed sceneName: String) -> SCNAnimationPlayer {
         

@@ -9,5 +9,5 @@
 import Foundation
 
 enum nodeEnum: String {
-    case plane = "Plane"
+    case plane = "PlaneNode"
 }

@@ -11,6 +11,8 @@
 		2A6A0AFF22341AD20080C0BA /* HandModelOld.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0AFE22341AD20080C0BA /* HandModelOld.mlmodel */; };
 		2A6A0B01223544A80080C0BA /* HandModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0B00223544A70080C0BA /* HandModel.mlmodel */; };
 		2A6A0B03223552DD0080C0BA /* CVPixelBuffer+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0B02223552DD0080C0BA /* CVPixelBuffer+Search.swift */; };
+		2A91D98E2247ABD7002E3B68 /* handClassification.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D98D2247ABD6002E3B68 /* handClassification.mlmodel */; };
+		2A91D9902247AC1E002E3B68 /* HandClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D98F2247AC1E002E3B68 /* HandClassification.swift */; };
 		2AF5B63F222BA7FE00A039EC /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF5B63E222BA7FE00A039EC /* Plane.swift */; };
 		2AF5B641222BAB4D00A039EC /* nodeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF5B640222BAB4D00A039EC /* nodeEnum.swift */; };
 		2AF7B41421ECAB0A00A868B8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B41321ECAB0A00A868B8 /* AppDelegate.swift */; };
@@ -32,6 +34,8 @@
 		2A6A0AFE22341AD20080C0BA /* HandModelOld.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = HandModelOld.mlmodel; sourceTree = "<group>"; };
 		2A6A0B00223544A70080C0BA /* HandModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = HandModel.mlmodel; sourceTree = "<group>"; };
 		2A6A0B02223552DD0080C0BA /* CVPixelBuffer+Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+Search.swift"; sourceTree = "<group>"; };
+		2A91D98D2247ABD6002E3B68 /* handClassification.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = handClassification.mlmodel; sourceTree = "<group>"; };
+		2A91D98F2247AC1E002E3B68 /* HandClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandClassification.swift; sourceTree = "<group>"; };
 		2AF5B63E222BA7FE00A039EC /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		2AF5B640222BAB4D00A039EC /* nodeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nodeEnum.swift; sourceTree = "<group>"; };
 		2AF7B41021ECAB0A00A868B8 /* MaxHand.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaxHand.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -67,6 +71,8 @@
 				2A6A0B00223544A70080C0BA /* HandModel.mlmodel */,
 				2A6A0AFE22341AD20080C0BA /* HandModelOld.mlmodel */,
 				2A6A0AFC22341A680080C0BA /* HandDetector.swift */,
+				2A91D98D2247ABD6002E3B68 /* handClassification.mlmodel */,
+				2A91D98F2247AC1E002E3B68 /* HandClassification.swift */,
 			);
 			path = CoreML;
 			sourceTree = "<group>";
@@ -223,12 +229,14 @@
 				2AF7B41821ECAB0A00A868B8 /* ViewController.swift in Sources */,
 				2AF7B43721EDCBB300A868B8 /* Max.swift in Sources */,
 				2A6A0B03223552DD0080C0BA /* CVPixelBuffer+Search.swift in Sources */,
+				2A91D98E2247ABD7002E3B68 /* handClassification.mlmodel in Sources */,
 				2AF5B641222BAB4D00A039EC /* nodeEnum.swift in Sources */,
 				2AF7B41421ECAB0A00A868B8 /* AppDelegate.swift in Sources */,
 				2AF7B44921EE021400A868B8 /* Utilities.swift in Sources */,
 				2A6A0AFF22341AD20080C0BA /* HandModelOld.mlmodel in Sources */,
 				2A6A0AFD22341A680080C0BA /* HandDetector.swift in Sources */,
 				2AF7B43F21EDECFF00A868B8 /* NodeUtils.swift in Sources */,
+				2A91D9902247AC1E002E3B68 /* HandClassification.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

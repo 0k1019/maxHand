@@ -20,17 +20,20 @@ class ViewController: UIViewController {
     @IBOutlet weak var instantOrPlaneMaxAppearSegmentedControl: UISegmentedControl!
     
     let handDetector = HandDetector()//class
+    let handClassification = HandClassification()
     
     var isOneCharaterMode: Bool = true
     var isInstantMode: Bool = true
     var isDetectPlane: Bool = false
     var detectedPlanes: [String : SCNNode] = [:]
     
+    private var timer = Timer()
+
     var currentBuffer: CVPixelBuffer?
     var currentCameraTransform:simd_float4x4?
     var handPreviewView = UIImageView()
     var spinning: Bool = false;
-
+    var walking: Bool = false;
     @IBAction func resetButton(){
         resetTracking();
         self.isDetectPlane = false;
@@ -42,9 +45,9 @@ class ViewController: UIViewController {
         detectedPlanes = [:]
         let rootnode = self.sceneView.scene.rootNode
         rootnode.enumerateChildNodes { (node, stop) in
-            if (node.name == "planeNode"){
+//            if (node.name == "planeNode"){
                 node.removeFromParentNode()
-            }
+//            }
         }
     }
     
@@ -75,6 +78,7 @@ class ViewController: UIViewController {
             self.isInstantMode = true
         } else{
             self.isInstantMode = false
+            self.isDetectPlane = false
         }
     
     }
@@ -85,9 +89,9 @@ class ViewController: UIViewController {
         guard let hitTest = self.sceneView.hitTest(tapLocation).first else {return}
        
         let hitNode = hitTest.node
-
+        
         switch hitNode.name {
-        case "Plane":
+        case nodeEnum.plane.rawValue:
             let node = hitNode;
             let translation = node.worldPosition
             print(node)
@@ -116,6 +120,7 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpSceneView()
+        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.loopCoreMLUpdate), userInfo: nil, repeats: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -134,7 +139,12 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-    
+    @objc
+    private func loopCoreMLUpdate() {
+        DispatchQueue.main.async{
+            self.findHandClassification()
+        }
+    }
     
 }
 extension ViewController: ARSCNViewDelegate {
@@ -149,6 +159,14 @@ extension ViewController: ARSCNViewDelegate {
         if self.isDetectPlane { return }
         
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+        print("ffefefe")
+        print(node.simdPosition)
+        print(node.worldPosition)
+        print(node.simdWorldPosition)
+        print(node.simdTransform)
+        print(node.parent?.position)
+        print(node.parent?.worldPosition)
+        print(node.parent?.transform)
         
 //        planeAnchor.transform.columns.3 이것이 진짜로 위치.
         //node.addchildnode 했을때의 우치 비밀을 찾아야한다.
@@ -174,11 +192,14 @@ extension ViewController: ARSCNViewDelegate {
             
             let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown.withAlphaComponent(0.7) as Any, doubleSided: false, horizontal: true)
             planeNode.name = nodeEnum.plane.rawValue
-            node.name = "planeNode"
-            node.addChildNode(planeNode)//이경우 위치가 왜 잡히는지 확인 필요.
-        
+ 
+            node.enumerateChildNodes { (node, _) in
+                print("efefefef")
+                print(node.worldPosition)
+            }
+            
             //each ancor has an unique identifier
-            detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
+            self.detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
         }
         
     }
@@ -188,10 +209,10 @@ extension ViewController: ARSCNViewDelegate {
 //    }
     
     // - Tag: UpdateARContent
-    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-
-
-    }
+//    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+//
+//
+//    }
 }
 
 extension ViewController: ARSessionDelegate{
@@ -203,7 +224,7 @@ extension ViewController: ARSessionDelegate{
         }
         currentCameraTransform = frame.camera.transform
         currentBuffer = frame.capturedImage
-        startDetection()
+        findOverLapPixel()
         
     }
     
@@ -341,9 +362,9 @@ extension ViewController {
         else {return b}
     }
     
-    private func startDetection() {
+    private func findOverLapPixel() {
         guard let buffer = currentBuffer else { return }
-        handDetector.performDetection(inputBuffer: buffer) {outputBuffer, _ in
+        handDetector.performDetection(inputBuffer: buffer) {(outputBuffer, _) in
             var previewImage: UIImage?
             var normalizedFingerTip: CGPoint?
             
@@ -384,5 +405,27 @@ extension ViewController {
             previewImage = UIImage(ciImage: CIImage(cvPixelBuffer: outBuffer))
             normalizedFingerTip = outBuffer.searchTopPoint()
         }
+    }
+    private func findHandClassification() {
+        guard let buffer = currentBuffer else {return}
+        handClassification.perfomrClassification(inputBuffer: buffer) { (topPredictionName, _) in
+            print(topPredictionName)
+            print("fefefefefaefasefjawfea")
+            guard let childNode = self.sceneView.scene.rootNode.childNode(withName: "Max", recursively: true) else{print("vvvv");return;}
+            guard let maxNode = childNode.topmost(until: self.sceneView.scene.rootNode) as? Max else{print("efefef");return;}
+
+            if(topPredictionName == "hand_open"){
+                if(self.walking == false){
+                    maxNode.walk()
+                    self.walking = true;
+                }
+            }else{
+                maxNode.walkStop()
+                self.walking = false;
+            }
+        
+        
+        }
+        
     }
 }
