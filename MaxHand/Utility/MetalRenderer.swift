@@ -37,8 +37,9 @@ class MetalRenderer {
         self.renderDestination.sampleCount = 1
         
         commandQueue = device.makeCommandQueue()
-        
-        prepareRenderPipelines(library: device.makeDefaultLibrary()!)
+        guard let deviceDefaultLibrary = device.makeDefaultLibrary() else {print("no default library")
+            return}
+        prepareRenderPipelines(library:deviceDefaultLibrary)
         
         // prepare vertex buffer(s)
         let imagePlaneVertexDataCount = kImagePlaneVertexData.count * MemoryLayout<Float>.size

@@ -19,6 +19,7 @@
 		2A6A0B03223552DD0080C0BA /* CVPixelBuffer+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0B02223552DD0080C0BA /* CVPixelBuffer+Search.swift */; };
 		2A91D98E2247ABD7002E3B68 /* handClassification.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D98D2247ABD6002E3B68 /* handClassification.mlmodel */; };
 		2A91D9902247AC1E002E3B68 /* HandClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D98F2247AC1E002E3B68 /* HandClassification.swift */; };
+		2A9327BA22510405000C643B /* PassThrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2A9327B922510405000C643B /* PassThrough.metal */; };
 		2AF5B63F222BA7FE00A039EC /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF5B63E222BA7FE00A039EC /* Plane.swift */; };
 		2AF5B641222BAB4D00A039EC /* nodeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF5B640222BAB4D00A039EC /* nodeEnum.swift */; };
 		2AF7B41421ECAB0A00A868B8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF7B41321ECAB0A00A868B8 /* AppDelegate.swift */; };
@@ -48,6 +49,7 @@
 		2A6A0B02223552DD0080C0BA /* CVPixelBuffer+Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+Search.swift"; sourceTree = "<group>"; };
 		2A91D98D2247ABD6002E3B68 /* handClassification.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = handClassification.mlmodel; sourceTree = "<group>"; };
 		2A91D98F2247AC1E002E3B68 /* HandClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandClassification.swift; sourceTree = "<group>"; };
+		2A9327B922510405000C643B /* PassThrough.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PassThrough.metal; sourceTree = "<group>"; };
 		2AF5B63E222BA7FE00A039EC /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		2AF5B640222BAB4D00A039EC /* nodeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nodeEnum.swift; sourceTree = "<group>"; };
 		2AF7B41021ECAB0A00A868B8 /* MaxHand.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaxHand.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,6 +146,7 @@
 		2AF7B43221ECBA5900A868B8 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				2A9327B922510405000C643B /* PassThrough.metal */,
 				2A146F5D2250FBA4006DB491 /* CVPixelBuffer+CIImage.swift */,
 				2A146F5F2250FBF1006DB491 /* AVCaptureDevice+Extension.swift */,
 				2A146F5B2250FB85006DB491 /* AVDepthData+Utils.swift */,
@@ -246,6 +249,7 @@
 				2AF7B44121EDF68700A868B8 /* SCNVector3+Extensions.swift in Sources */,
 				2AF7B41821ECAB0A00A868B8 /* ViewController.swift in Sources */,
 				2A146F602250FBF1006DB491 /* AVCaptureDevice+Extension.swift in Sources */,
+				2A9327BA22510405000C643B /* PassThrough.metal in Sources */,
 				2AF7B43721EDCBB300A868B8 /* Max.swift in Sources */,
 				2A6A0B03223552DD0080C0BA /* CVPixelBuffer+Search.swift in Sources */,
 				2A91D98E2247ABD7002E3B68 /* handClassification.mlmodel in Sources */,
