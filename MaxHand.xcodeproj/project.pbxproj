@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A146F562250F9E9006DB491 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A146F552250F9E9006DB491 /* VideoCapture.swift */; };
+		2A146F582250FA11006DB491 /* VideoCameraType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A146F572250FA11006DB491 /* VideoCameraType.swift */; };
+		2A146F5A2250FA27006DB491 /* MetalRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A146F592250FA27006DB491 /* MetalRenderer.swift */; };
+		2A146F5C2250FB85006DB491 /* AVDepthData+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A146F5B2250FB85006DB491 /* AVDepthData+Utils.swift */; };
+		2A146F5E2250FBA4006DB491 /* CVPixelBuffer+CIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A146F5D2250FBA4006DB491 /* CVPixelBuffer+CIImage.swift */; };
+		2A146F602250FBF1006DB491 /* AVCaptureDevice+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A146F5F2250FBF1006DB491 /* AVCaptureDevice+Extension.swift */; };
 		2A6A0AFD22341A680080C0BA /* HandDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0AFC22341A680080C0BA /* HandDetector.swift */; };
 		2A6A0AFF22341AD20080C0BA /* HandModelOld.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0AFE22341AD20080C0BA /* HandModelOld.mlmodel */; };
 		2A6A0B01223544A80080C0BA /* HandModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0B00223544A70080C0BA /* HandModel.mlmodel */; };
@@ -30,6 +36,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2A146F552250F9E9006DB491 /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
+		2A146F572250FA11006DB491 /* VideoCameraType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCameraType.swift; sourceTree = "<group>"; };
+		2A146F592250FA27006DB491 /* MetalRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalRenderer.swift; sourceTree = "<group>"; };
+		2A146F5B2250FB85006DB491 /* AVDepthData+Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVDepthData+Utils.swift"; sourceTree = "<group>"; };
+		2A146F5D2250FBA4006DB491 /* CVPixelBuffer+CIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+CIImage.swift"; sourceTree = "<group>"; };
+		2A146F5F2250FBF1006DB491 /* AVCaptureDevice+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice+Extension.swift"; sourceTree = "<group>"; };
 		2A6A0AFC22341A680080C0BA /* HandDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandDetector.swift; sourceTree = "<group>"; };
 		2A6A0AFE22341AD20080C0BA /* HandModelOld.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = HandModelOld.mlmodel; sourceTree = "<group>"; };
 		2A6A0B00223544A70080C0BA /* HandModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = HandModel.mlmodel; sourceTree = "<group>"; };
@@ -132,6 +144,12 @@
 		2AF7B43221ECBA5900A868B8 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				2A146F5D2250FBA4006DB491 /* CVPixelBuffer+CIImage.swift */,
+				2A146F5F2250FBF1006DB491 /* AVCaptureDevice+Extension.swift */,
+				2A146F5B2250FB85006DB491 /* AVDepthData+Utils.swift */,
+				2A146F592250FA27006DB491 /* MetalRenderer.swift */,
+				2A146F572250FA11006DB491 /* VideoCameraType.swift */,
+				2A146F552250F9E9006DB491 /* VideoCapture.swift */,
 				2AF7B44821EE021400A868B8 /* Utilities.swift */,
 				2AF7B44021EDF68600A868B8 /* SCNVector3+Extensions.swift */,
 				2AF7B44421EDF6D800A868B8 /* Node+Extensions.swift */,
@@ -227,16 +245,22 @@
 				2A6A0B01223544A80080C0BA /* HandModel.mlmodel in Sources */,
 				2AF7B44121EDF68700A868B8 /* SCNVector3+Extensions.swift in Sources */,
 				2AF7B41821ECAB0A00A868B8 /* ViewController.swift in Sources */,
+				2A146F602250FBF1006DB491 /* AVCaptureDevice+Extension.swift in Sources */,
 				2AF7B43721EDCBB300A868B8 /* Max.swift in Sources */,
 				2A6A0B03223552DD0080C0BA /* CVPixelBuffer+Search.swift in Sources */,
 				2A91D98E2247ABD7002E3B68 /* handClassification.mlmodel in Sources */,
+				2A146F562250F9E9006DB491 /* VideoCapture.swift in Sources */,
+				2A146F5E2250FBA4006DB491 /* CVPixelBuffer+CIImage.swift in Sources */,
 				2AF5B641222BAB4D00A039EC /* nodeEnum.swift in Sources */,
 				2AF7B41421ECAB0A00A868B8 /* AppDelegate.swift in Sources */,
 				2AF7B44921EE021400A868B8 /* Utilities.swift in Sources */,
 				2A6A0AFF22341AD20080C0BA /* HandModelOld.mlmodel in Sources */,
+				2A146F5C2250FB85006DB491 /* AVDepthData+Utils.swift in Sources */,
 				2A6A0AFD22341A680080C0BA /* HandDetector.swift in Sources */,
+				2A146F5A2250FA27006DB491 /* MetalRenderer.swift in Sources */,
 				2AF7B43F21EDECFF00A868B8 /* NodeUtils.swift in Sources */,
 				2A91D9902247AC1E002E3B68 /* HandClassification.swift in Sources */,
+				2A146F582250FA11006DB491 /* VideoCameraType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

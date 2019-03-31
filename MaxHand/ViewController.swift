@@ -11,6 +11,8 @@ import SceneKit
 import ARKit
 import CoreML
 import Vision
+import MetalKit
+import AVFoundation
 
 class ViewController: UIViewController {
 
@@ -32,8 +34,31 @@ class ViewController: UIViewController {
     var currentBuffer: CVPixelBuffer?
     var currentCameraTransform:simd_float4x4?
     var handPreviewView = UIImageView()
+    var depthPreviewView = UIImageView()
     var spinning: Bool = false;
     var walking: Bool = false;
+    
+    
+    
+    
+    @IBOutlet weak var previewView: UIView!
+    @IBOutlet weak var mtkView: MTKView!
+    @IBOutlet weak var filterSwitch: UISwitch!
+    @IBOutlet weak var disparitySwitch: UISwitch!
+    @IBOutlet weak var equalizeSwitch: UISwitch!
+    
+    private var videoCapture: VideoCapture!
+    var currentCameraType: CameraType = .back(true)
+    private let serialQueue = DispatchQueue(label: "com.shu223.iOS-Depth-Sampler.queue")
+    
+    private var renderer: MetalRenderer!
+    private var depthImage: CIImage?
+    private var currentDrawableSize: CGSize!
+    
+    private var videoImage: CIImage?
+    
+    
+    
     @IBAction func resetButton(){
         resetTracking();
         self.isDetectPlane = false;
@@ -115,14 +140,57 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Set the view's delegate
         self.sceneView.delegate = self
+        
+        
+        
+        guard let device = MTLCreateSystemDefaultDevice() else{ print("fefef")
+            return}
+        self.mtkView.device = device
+        self.mtkView.backgroundColor = UIColor.clear
+        self.mtkView.delegate = self
+        self.renderer = MetalRenderer(metalDevice: device, renderDestination: mtkView)
+        currentDrawableSize = mtkView.currentDrawable!.layer.drawableSize
+
+        videoCapture = VideoCapture(cameraType: currentCameraType,
+                                    preferredSpec: nil,
+                                    previewContainer: previewView.layer)
+        
+        videoCapture.syncedDataBufferHandler = { [weak self] videoPixelBuffer, depthData, face in
+            guard let self = self else { return }
+            
+            self.videoImage = CIImage(cvPixelBuffer: videoPixelBuffer)
+            
+            var useDisparity: Bool = false
+            var applyHistoEq: Bool = false
+            DispatchQueue.main.sync(execute: {
+                useDisparity = self.disparitySwitch.isOn
+                applyHistoEq = self.equalizeSwitch.isOn
+            })
+            
+            self.serialQueue.async {
+                guard let depthData = useDisparity ? depthData?.convertToDisparity() : depthData else { return }
+                
+                guard let ciImage = depthData.depthDataMap.transformedImage(targetSize: self.currentDrawableSize, rotationAngle: 0) else { return }
+                self.depthImage = applyHistoEq ? ciImage.applyingFilter("YUCIHistogramEqualization") : ciImage
+            }
+        }
+        videoCapture.setDepthFilterEnabled(filterSwitch.isOn)
+        
     }
     // 뷰가 이제 나타날 거라는 신호
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpSceneView()
         self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.loopCoreMLUpdate), userInfo: nil, repeats: true)
-    }
+        guard let videoCapture = videoCapture else {return}
+        videoCapture.startCapture()
     
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard let videoCapture = videoCapture else {return}
+        videoCapture.resizePreview()
+    }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
@@ -133,6 +201,10 @@ class ViewController: UIViewController {
         sceneView.session.pause()
     }
     override func viewDidDisappear(_ animated: Bool) {
+        guard let videoCapture = videoCapture else {return}
+        videoCapture.imageBufferHandler = nil
+        videoCapture.stopCapture()
+        mtkView.delegate = nil
         super.viewDidDisappear(animated)
     }
     override func didReceiveMemoryWarning() {
@@ -144,6 +216,20 @@ class ViewController: UIViewController {
         DispatchQueue.main.async{
             self.findHandClassification()
         }
+    }
+    
+    @IBAction func cameraSwitchBtnTapped(_ sender: UIButton) {
+        switch currentCameraType {
+        case .back:
+            currentCameraType = .front(true)
+        case .front:
+            currentCameraType = .back(true)
+        }
+        videoCapture.changeCamera(with: currentCameraType)
+    }
+    
+    @IBAction func filterSwitched(_ sender: UISwitch) {
+        videoCapture.setDepthFilterEnabled(sender.isOn)
     }
     
 }
@@ -225,6 +311,7 @@ extension ViewController: ARSessionDelegate{
         currentCameraTransform = frame.camera.transform
         currentBuffer = frame.capturedImage
         findOverLapPixel()
+        findDepthHistogram()
         
     }
     
@@ -316,39 +403,46 @@ extension ViewController: ARSessionDelegate{
     private func resetTracking() {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal]
-        sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        self.sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
         self.sceneView.session.run(configuration)
-        sceneView.showsStatistics = true
-        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
-        sceneView.delegate = self
-        sceneView.session.delegate = self
+        self.sceneView.showsStatistics = true
+        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        self.sceneView.delegate = self
+        self.sceneView.session.delegate = self
     }
     private func setUpSceneView() {
-        view = sceneView
-        sceneView.delegate = self
+        self.view = sceneView
+        self.sceneView.delegate = self
         // Start the view's AR session with a configuration that uses the rear camera,
         // device position and orientation tracking, and plane detection.
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal]
-        sceneView.session.run(configuration)
+        self.sceneView.session.run(configuration)
         
         // Set a delegate to track the number of plane anchors for providing UI feedback.
-        sceneView.session.delegate = self
+        self.sceneView.session.delegate = self
         
         // Prevent the screen from being dimmed after a while as users will likely
         // have long periods of interaction without touching the screen or buttons.
         UIApplication.shared.isIdleTimerDisabled = true
         
         // Show debug UI to view performance metrics (e.g. frames per second).
-        sceneView.showsStatistics = true
+        self.sceneView.showsStatistics = true
         
-        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
-        view.addSubview(handPreviewView)
+        self.view.addSubview(self.handPreviewView)
+
+        self.handPreviewView.translatesAutoresizingMaskIntoConstraints = false
+        self.handPreviewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        self.handPreviewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+
+        self.view.addSubview(self.depthPreviewView)
+        self.depthPreviewView.translatesAutoresizingMaskIntoConstraints = false
+        self.depthPreviewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        self.depthPreviewView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+//        self.depthPreviewView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         
-        handPreviewView.translatesAutoresizingMaskIntoConstraints = false
-        handPreviewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        handPreviewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }
 
@@ -384,8 +478,8 @@ extension ViewController {
                     guard let hitTest = self.sceneView.hitTest(imageFingerPoint).first else {return}
 
                     let hitNode = hitTest.node
-                    print(hitNode)
-                    print(hitNode.childNodes)
+//                    print(hitNode)
+//                    print(hitNode.childNodes)
                     if let maxNode = hitNode.topmost(until: self.sceneView.scene.rootNode) as? Max{
                         if (self.spinning == false) {
                             DispatchQueue.main.async {
@@ -427,5 +521,37 @@ extension ViewController {
         
         }
         
+    }
+    private func findDepthHistogram() {
+//        guard let buffer = currentBuffer else { return }
+//        var previewImage: UIImage?
+//
+//        previewImage = UIImage(ciImage: CIImage(cvPixelBuffer: buffer), scale: 0.2, orientation: .up)
+//        self.handPreviewView.image = previewImage
+
+        guard let image = UIImage(named: "art.scnassets/texture.png") else {
+            fatalError("Missing MyImage...")
+        }
+        
+//        image.scale = CGSize(width: 50, height: 50)
+        DispatchQueue.main.async {
+//            self.depthPreviewView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+            self.depthPreviewView.bounds = CGRect(x: 0, y: 0, width: 50, height: 50)
+            self.depthPreviewView.image = image
+
+        }
+    }
+    
+    
+}
+extension ViewController: MTKViewDelegate {
+    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        currentDrawableSize = size
+    }
+    
+    func draw(in view: MTKView) {
+        if let image = depthImage {
+            renderer.update(with: image)
+        }
     }
 }
