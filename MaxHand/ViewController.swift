@@ -159,15 +159,15 @@ extension ViewController: ARSCNViewDelegate {
         if self.isDetectPlane { return }
         
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-        print("ffefefe")
-        print(node.simdPosition)
-        print(node.worldPosition)
-        print(node.simdWorldPosition)
-        print(node.simdTransform)
-        print(node.parent?.position)
-        print(node.parent?.worldPosition)
-        print(node.parent?.transform)
-        
+//        print("ffefefe")
+//        print(node.simdPosition)
+//        print(node.worldPosition)
+//        print(node.simdWorldPosition)
+//        print(node.simdTransform)
+//        print(node.parent?.position)
+//        print(node.parent?.worldPosition)
+//        print(node.parent?.transform)
+//
 //        planeAnchor.transform.columns.3 이것이 진짜로 위치.
         //node.addchildnode 했을때의 우치 비밀을 찾아야한다.
         if (isOneCharaterMode) {
@@ -193,10 +193,10 @@ extension ViewController: ARSCNViewDelegate {
             let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown.withAlphaComponent(0.7) as Any, doubleSided: false, horizontal: true)
             planeNode.name = nodeEnum.plane.rawValue
  
-            node.enumerateChildNodes { (node, _) in
-                print("efefefef")
-                print(node.worldPosition)
-            }
+//            node.enumerateChildNodes { (node, _) in
+//                print("efefefef")
+//                print(node.worldPosition)
+//            }
             
             //each ancor has an unique identifier
             self.detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
@@ -384,8 +384,7 @@ extension ViewController {
                     guard let hitTest = self.sceneView.hitTest(imageFingerPoint).first else {return}
 
                     let hitNode = hitTest.node
-                    print(hitNode)
-                    print(hitNode.childNodes)
+                    
                     if let maxNode = hitNode.topmost(until: self.sceneView.scene.rootNode) as? Max{
                         if (self.spinning == false) {
                             DispatchQueue.main.async {
@@ -414,13 +413,25 @@ extension ViewController {
             guard let childNode = self.sceneView.scene.rootNode.childNode(withName: "Max", recursively: true) else{print("vvvv");return;}
             guard let maxNode = childNode.topmost(until: self.sceneView.scene.rootNode) as? Max else{print("efefef");return;}
 
+            if(maxNode.isPaused) {print("paused")}
+            
             if(topPredictionName == "hand_open"){
                 if(self.walking == false){
+                    maxNode.jumpStop()
                     maxNode.walk()
                     self.walking = true;
                 }
-            }else{
+            }
+            else if(topPredictionName == "hand_fist"){
+                if(self.walking == false){
+                    maxNode.walkStop()
+                    maxNode.jump()
+                    self.walking = true;
+                }
+            }
+            else{
                 maxNode.walkStop()
+                maxNode.jumpStop()
                 self.walking = false;
             }
         

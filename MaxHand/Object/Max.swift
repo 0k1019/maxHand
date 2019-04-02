@@ -40,7 +40,8 @@ class Max: SCNNode {
         model.addAnimationPlayer(walkAnimation, forKey: "walk")
         
         let jumpAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_jump.scn")
-        jumpAnimation.animation.isRemovedOnCompletion = true
+        jumpAnimation.animation.isRemovedOnCompletion = false
+        jumpAnimation.speed = 1.5
         jumpAnimation.stop()
         model.addAnimationPlayer(jumpAnimation, forKey: "jump")
         
@@ -116,7 +117,12 @@ class Max: SCNNode {
     func walkStop(){
         self.animationPlayer(forKey: "walk")?.stop()
     }
-    
+    func jump(){
+        self.animationPlayer(forKey: "jump")?.play()
+    }
+    func jumpStop(){
+        self.animationPlayer(forKey: "jump")?.stop()
+    }
     class func loadAnimation(fromSceneNamed sceneName: String) -> SCNAnimationPlayer {
         
         let scene = SCNScene( named: sceneName )!
