@@ -421,26 +421,24 @@ extension ViewController {
             if(maxNode.isPaused) {print("paused")}
             
             if(topPredictionName == "hand_open"){
-                if(self.walking == false){
+//                if(self.walking == false){
                     maxNode.jumpStop()
                     maxNode.walk()
-                    self.walking = true;
-                }
+//                    self.walking = true;
+//                }
             }
             else if(topPredictionName == "hand_fist"){
-                if(self.walking == false){
+//                if(self.walking == false){
                     maxNode.walkStop()
                     maxNode.jump()
-                    self.walking = true;
-                }
+//                    self.walking = true;
+//                }
             }
             else{
                 maxNode.walkStop()
                 maxNode.jumpStop()
-                self.walking = false;
+//                self.walking = false;
             }
-        
-        
         }
         
     }
