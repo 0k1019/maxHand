@@ -113,11 +113,22 @@ class ViewController: UIViewController {
     //시스템에의해 자동으로 호출, 리소스 초기화나 초기 화면 구성용도, 화면 처음 만들어질 때 한 번만 실행.
     override func viewDidLoad() {
         super.viewDidLoad()
-        let houseScene = SCNScene(named: "art.scnassets/character/trainanimation.dae")
-        let houseNode = houseScene?.rootNode.childNode(withName: "train_anim", recursively: true)
-        houseNode?.scale = SCNVector3(0.01,0.01,0.01)
-        self.sceneView.scene.rootNode.addChildNode(houseNode!)
+        guard let catScene = SCNScene(named: "art.scnassets/character/cat.scn") else {return}
+//        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+//
+//        let houseNode = houseScene?.rootNode.childNode(withName: "catref", recursively: true)
+//        houseNode?.scale = SCNVector3(0.001,0.001,0.001)
+//        self.sceneView.scene.rootNode.addChildNode(houseNode!)
+        let catNode = SCNNode()
+        let catSceneChildNodes = catScene.rootNode.childNodes
         
+        for childNode in catSceneChildNodes {
+            catNode.addChildNode(childNode)
+        }
+        
+        catNode.position = SCNVector3(0, 0, 0)
+        catNode.scale = SCNVector3(0.5, 0.5, 0.5)
+        sceneView.scene.rootNode.addChildNode(catNode)
         // Set the view's delegate
         self.sceneView.delegate = self
     }
