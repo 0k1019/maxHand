@@ -418,30 +418,35 @@ extension ViewController {
             
             if(topPredictionName == "hand_open"){
 //                if(self.walking == false){
-                    maxNode.jumpStop()
-                    maxNode.walk()
+//                    maxNode.jumpStop()
+//                    maxNode.walk()
 //                    self.walking = true;
+//                    maxNode.isWalking = true
 //                }
             }
             else if(topPredictionName == "hand_fist"){
 //                if(self.walking == false){
-                    maxNode.walkStop()
-                    maxNode.jump()
+//                    maxNode.walkStop()
+//                    maxNode.jump()
 //                    self.walking = true;
+                
+//                    maxNode.isJumping = true
 //                }
             }
             else if(topPredictionName == "hand_two"){
                 guard let cameraTransform = self.sceneView.session.currentFrame?.camera.transform else {return}
                 let cameraPosition = SCNVector3Make(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
                 maxNode.maxCome(camera: cameraPosition)
-                
+
             }
             else{
-                maxNode.walkStop()
-                maxNode.jumpStop()
+//                maxNode.walkStop()
+//                maxNode.jumpStop()
 //                self.walking = false;
-                maxNode.removeAllActions()
-                maxNode.removeAllAnimations()
+//                maxNode.removeAllActions()
+//                maxNode.removeAllAnimations()
+                maxNode.isWalking = false
+                maxNode.isJumping = false
             }
         }
         

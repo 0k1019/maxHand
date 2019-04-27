@@ -15,21 +15,74 @@ class Max: SCNNode {
 //    var walking: Bool = false
     var spining: Bool = false
     static private let speedFactor: CGFloat = 2.0
+    static private let initialPosition = float3(0.1, -0.2, 0)
 
+    // Character handle
+//    private var characterNode: SCNNode! // top level node
+    private var characterOrientation: SCNNode! // the node to rotate to orient the character
+    private var model: SCNNode! // the model loaded from the character file
+    
+    private var directionAngle: CGFloat = 0.0 {
+        didSet {
+            characterOrientation.runAction(
+                SCNAction.rotateTo(x: 0.0, y: directionAngle, z: 0.0, duration: 0.1, usesShortestUnitArc:true))
+        }
+    }
+    
+    var isWalking: Bool = false {
+        didSet {
+            if oldValue != isWalking {
+                // Update node animation.
+                if isWalking {
+                    model.animationPlayer(forKey: "walk")?.play()
+                } else {
+                    model.animationPlayer(forKey: "walk")?.stop(withBlendOutDuration: 0.2)
+                }
+            }
+        }
+    }
+    
+    var isJumping: Bool = false {
+        didSet {
+            if oldValue != isJumping {
+                if isJumping {
+                    model.animationPlayer(forKey: "jump")?.play()
+                } else {
+                    model.animationPlayer(forKey: "jump")?.stop()
+                }
+            }
+        }
+    }
     
     override init(){
         super.init()
-        self.addChildNode(loadedContentForAsset(named: "max", directory: "character"))
+        loadCharacter()
         loadAnimations()
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func loadCharacter() {
+        let scene = SCNScene(named: "art.scnassets/character/max.scn")!
+        model = scene.rootNode.childNode(withName: "Max_rootNode", recursively: true)
+        /* setup character hierarchy
+         Max
+         |_orientationNode
+         |_model
+         */
+        
+        self.name = "character"
+        self.simdPosition = Max.initialPosition
+        
+        characterOrientation = SCNNode()
+        self.addChildNode(characterOrientation)
+        characterOrientation.addChildNode(model)
+        
+    }
+    
     
     private func loadAnimations() {
-        
-        let model = self
         
         let idleAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_idle.scn")
         model.addAnimationPlayer(idleAnimation, forKey: "idle")
@@ -54,7 +107,8 @@ class Max: SCNNode {
         
         let hiphopAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/hiphopani.scn")
         hiphopAnimation.animation.isRemovedOnCompletion = false
-//        hiphopAnimation.stop()
+        hiphopAnimation.speed = 1.5
+        hiphopAnimation.stop()
         model.addAnimationPlayer(hiphopAnimation, forKey: "hiphop")
         
     }
@@ -115,29 +169,20 @@ class Max: SCNNode {
 //        runAction(rotateHalf)
 //    }
     func spin(){
-        self.animationPlayer(forKey: "spin")?.play()
+        model.animationPlayer(forKey: "spin")?.play()
     }
-    func walk(){
-        self.animationPlayer(forKey: "walk")?.play()
-    }
-    func walkStop(){
-        self.animationPlayer(forKey: "walk")?.stop()
-    }
-    func jump(){
-        self.animationPlayer(forKey: "jump")?.play()
-    }
-    func jumpStop(){
-        self.animationPlayer(forKey: "jump")?.stop()
-    }
+    
     
     func maxCome(camera: SCNVector3){
         removeAllActions()
         SCNTransaction.begin()
-        self.walk()
-        self.position = SCNVector3Make(camera.x
-            , self.position.y, camera.z)
+        self.isWalking = true
+//        self.walk()
+//        self.position = SCNVector3Make(camera.x, self.position.y, camera.z)
         let cameraPosition = SCNVector3Make(camera.x, camera.y, camera.z)
-        SCNAction.move(to: cameraPosition, duration: 2)
+        let move = SCNAction.move(to: cameraPosition, duration: 2)
+        self.characterOrientation.look(at: cameraPosition)
+        self.runAction(move)
         SCNTransaction.commit()
     }
     
