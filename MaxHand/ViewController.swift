@@ -113,22 +113,7 @@ class ViewController: UIViewController {
     //시스템에의해 자동으로 호출, 리소스 초기화나 초기 화면 구성용도, 화면 처음 만들어질 때 한 번만 실행.
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let catScene = SCNScene(named: "art.scnassets/character/hip.scn") else {return}
-//        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-//
-//        let houseNode = houseScene?.rootNode.childNode(withName: "catref", recursively: true)
-//        houseNode?.scale = SCNVector3(0.001,0.001,0.001)
-//        self.sceneView.scene.rootNode.addChildNode(houseNode!)
-        let catNode = SCNNode()
-        let catSceneChildNodes = catScene.rootNode.childNodes
         
-        for childNode in catSceneChildNodes {
-            catNode.addChildNode(childNode)
-        }
-        
-        catNode.position = SCNVector3(0, 0, 0)
-        catNode.scale = SCNVector3(0.5, 0.5, 0.5)
-        sceneView.scene.rootNode.addChildNode(catNode)
         // Set the view's delegate
         self.sceneView.delegate = self
     }
@@ -422,8 +407,8 @@ extension ViewController {
         }
     }
     private func findHandClassification() {
-        guard let buffer = currentBuffer else {return}
-        handClassification.perfomrClassification(inputBuffer: buffer) { (topPredictionName, _) in
+        guard let buffer = self.currentBuffer else {return}
+        self.handClassification.perfomrClassification(inputBuffer: buffer) { (topPredictionName, _) in
             print(topPredictionName)
             print("fefefefefaefasefjawfea")
             guard let childNode = self.sceneView.scene.rootNode.childNode(withName: "Max", recursively: true) else{print("vvvv");return;}
@@ -445,10 +430,18 @@ extension ViewController {
 //                    self.walking = true;
 //                }
             }
+            else if(topPredictionName == "hand_two"){
+                guard let cameraTransform = self.sceneView.session.currentFrame?.camera.transform else {return}
+                let cameraPosition = SCNVector3Make(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+                maxNode.maxCome(camera: cameraPosition)
+                
+            }
             else{
                 maxNode.walkStop()
                 maxNode.jumpStop()
 //                self.walking = false;
+                maxNode.removeAllActions()
+                maxNode.removeAllAnimations()
             }
         }
         

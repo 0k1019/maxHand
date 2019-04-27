@@ -26,6 +26,7 @@ class Max: SCNNode {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     private func loadAnimations() {
         
         let model = self
@@ -50,6 +51,11 @@ class Max: SCNNode {
         spinAnimation.speed = 1.5
         spinAnimation.stop()
         model.addAnimationPlayer(spinAnimation, forKey: "spin")
+        
+        let hiphopAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/hiphopani.scn")
+        hiphopAnimation.animation.isRemovedOnCompletion = false
+//        hiphopAnimation.stop()
+        model.addAnimationPlayer(hiphopAnimation, forKey: "hiphop")
         
     }
     
@@ -81,26 +87,26 @@ class Max: SCNNode {
 //        }
 //    }
 //
-//    func frontCamera(cameraTransform: simd_float4x4){
-//        let cameraPosition = SCNVector3(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
-//        let distanceToTarget = cameraPosition.distance(receiver: self.position)
-//        print("max.position")
-//        print(self.position)
-//        print("camera.position")
-//        print(cameraPosition)
-//        print("distanceToTarget")
-//        print(distanceToTarget)
-//
-//        self.position = maxPosition(cameraTransform: cameraTransform)
-//    }
-//
-//    private func maxPosition(cameraTransform: simd_float4x4) -> SCNVector3{
-//        var translation = matrix_identity_float4x4
-//        translation.columns.3.z = -5.0
-//        let transform = cameraTransform * translation
-//        let position = SCNVector3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
-//        return position
-//    }
+    func frontCamera(cameraTransform: simd_float4x4){
+        let cameraPosition = SCNVector3(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+        let distanceToTarget = cameraPosition.distance(receiver: self.position)
+        print("max.position")
+        print(self.position)
+        print("camera.position")
+        print(cameraPosition)
+        print("distanceToTarget")
+        print(distanceToTarget)
+
+        self.position = maxPosition(cameraTransform: cameraTransform)
+    }
+
+    private func maxPosition(cameraTransform: simd_float4x4) -> SCNVector3{
+        var translation = matrix_identity_float4x4
+        translation.columns.3.z = -5.0
+        let transform = cameraTransform * translation
+        let position = SCNVector3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
+        return position
+    }
     
 //    func turnAround(){
 //        if walking{ return }
@@ -123,6 +129,18 @@ class Max: SCNNode {
     func jumpStop(){
         self.animationPlayer(forKey: "jump")?.stop()
     }
+    
+    func maxCome(camera: SCNVector3){
+        removeAllActions()
+        SCNTransaction.begin()
+        self.walk()
+        self.position = SCNVector3Make(camera.x
+            , self.position.y, camera.z)
+        let cameraPosition = SCNVector3Make(camera.x, camera.y, camera.z)
+        SCNAction.move(to: cameraPosition, duration: 2)
+        SCNTransaction.commit()
+    }
+    
     class func loadAnimation(fromSceneNamed sceneName: String) -> SCNAnimationPlayer {
         
         let scene = SCNScene( named: sceneName )!
