@@ -78,6 +78,9 @@ class Max: SCNNode {
         characterOrientation = SCNNode()
         self.addChildNode(characterOrientation)
         characterOrientation.addChildNode(model)
+        self.model.enumerateChildNodes { (childNode, nil) in
+            print(childNode)
+        }
         
     }
     
@@ -180,7 +183,8 @@ class Max: SCNNode {
 //        self.walk()
 //        self.position = SCNVector3Make(camera.x, self.position.y, camera.z)
         let cameraPosition = SCNVector3Make(camera.x, camera.y, camera.z)
-        let move = SCNAction.move(to: cameraPosition, duration: 2)
+        let movePosition = SCNVector3Make(camera.x, self.position.y, camera.z)
+        let move = SCNAction.move(to: movePosition, duration: 2)
         self.characterOrientation.look(at: cameraPosition)
         self.runAction(move)
         SCNTransaction.commit()
