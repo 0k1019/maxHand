@@ -428,9 +428,9 @@ extension ViewController {
 //                }
             }
             else if(topPredictionName == "hand_two"){
-                guard let cameraTransform = self.sceneView.session.currentFrame?.camera.transform else {return}
-                let cameraPosition = SCNVector3Make(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
-                maxNode.maxCome(camera: cameraPosition)
+//                guard let cameraTransform = self.sceneView.session.currentFrame?.camera.transform else {return}
+//                let cameraPosition = SCNVector3Make(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+//                maxNode.maxCome(camera: cameraPosition)
 
             }
             else{

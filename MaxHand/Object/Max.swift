@@ -88,8 +88,8 @@ class Max: SCNNode {
     
     private func loadAnimations() {
         
-        let idleAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_idle.scn")
-        model.addAnimationPlayer(idleAnimation, forKey: "idle")
+//        let idleAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_idle.scn")
+//        model.addAnimationPlayer(idleAnimation, forKey: "idle")
 //        idleAnimation.play()
         
         let walkAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_walk.scn")
