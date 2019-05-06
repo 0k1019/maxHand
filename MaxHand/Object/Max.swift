@@ -13,6 +13,7 @@ class Max: SCNNode {
 //    var animating: Bool = false
 //    let patrolDistance: Float = 6
 //    var walking: Bool = false
+    var status: Int = 0
     var spining: Bool = false
     static private let speedFactor: CGFloat = 2.0
     static private let initialPosition = float3(0.1, -0.2, 0)
@@ -36,7 +37,7 @@ class Max: SCNNode {
                 if isWalking {
                     model.animationPlayer(forKey: "walk")?.play()
                 } else {
-                    model.animationPlayer(forKey: "walk")?.stop(withBlendOutDuration: 0.2)
+                    model.animationPlayer(forKey: "walk")?.stop(withBlendOutDuration: 2)
                 }
             }
         }
@@ -116,34 +117,6 @@ class Max: SCNNode {
         
     }
     
-//    func animate() {
-//        if animating{return}
-//        animating = true
-//        let rotateOne = SCNAction.rotateBy(x: 0, y: .pi * 2, z: 0, duration: 1.0)
-//
-//        let backwards = rotateOne.reversed()
-//        let rotateSequence = SCNAction.sequence([rotateOne, backwards])
-//        let repeatFoever = SCNAction.repeatForever(rotateSequence)
-//
-//        runAction(repeatFoever)
-//    }
-//    func patrol(targetPos: SCNVector3){
-//        let distanceToTarget = targetPos.distance(receiver: self.position)
-//
-//        if distanceToTarget < patrolDistance{
-//            removeAllActions()
-//            animating = false
-//            SCNTransaction.begin()
-//            SCNTransaction.animationDuration = 0.20
-//            look(at: targetPos)
-//            SCNTransaction.commit()
-//        } else {
-//            if !animating{
-//                animate()
-//            }
-//        }
-//    }
-//
     func frontCamera(cameraTransform: simd_float4x4){
         let cameraPosition = SCNVector3(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
         let distanceToTarget = cameraPosition.distance(receiver: self.position)
@@ -180,15 +153,24 @@ class Max: SCNNode {
         removeAllActions()
         SCNTransaction.begin()
         self.isWalking = true
-//        self.walk()
-//        self.position = SCNVector3Make(camera.x, self.position.y, camera.z)
         let cameraPosition = SCNVector3Make(camera.x, camera.y, camera.z)
-        let movePosition = SCNVector3Make(camera.x, self.position.y, camera.z)
+        let maxPosition = makeMaxPositionBetween(Avec: cameraPosition, Bvec: self.position, By: 2)
+        let movePosition = SCNVector3Make(maxPosition.x, self.position.y, maxPosition.z)
         let move = SCNAction.move(to: movePosition, duration: 2)
         self.characterOrientation.look(at: cameraPosition)
         self.runAction(move)
         SCNTransaction.commit()
     }
+    
+    private func makeMaxPositionBetween(Avec: SCNVector3, Bvec: SCNVector3, By: Float) -> SCNVector3{
+        var Dvec = Bvec - Avec
+        Dvec.normalize()
+        let Cvec = Dvec * By + Avec
+        return Cvec
+    }
+    
+    
+    
     
     class func loadAnimation(fromSceneNamed sceneName: String) -> SCNAnimationPlayer {
         

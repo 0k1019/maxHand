@@ -161,17 +161,7 @@ extension ViewController: ARSCNViewDelegate {
         if self.isDetectPlane { return }
         
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-//        print("ffefefe")
-//        print(node.simdPosition)
-//        print(node.worldPosition)
-//        print(node.simdWorldPosition)
-//        print(node.simdTransform)
-//        print(node.parent?.position)
-//        print(node.parent?.worldPosition)
-//        print(node.parent?.transform)
-//
-//        planeAnchor.transform.columns.3 이것이 진짜로 위치.
-        //node.addchildnode 했을때의 우치 비밀을 찾아야한다.
+
         if (isOneCharaterMode) {
             self.isDetectPlane = true
         } else {
