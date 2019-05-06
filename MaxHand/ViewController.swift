@@ -356,6 +356,8 @@ extension ViewController {
     
     private func findOverLapPixel() {
         guard let buffer = currentBuffer else { return }
+        guard let cameraTransform = self.sceneView.session.currentFrame?.camera.transform else {return}
+        let cameraPosition = SCNVector3Make(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
         handDetector.performDetection(inputBuffer: buffer) {(outputBuffer, _) in
             var previewImage: UIImage?
             var normalizedFingerTip: CGPoint?
@@ -378,7 +380,9 @@ extension ViewController {
                     let hitNode = hitTest.node
                     
                     if let maxNode = hitNode.topmost(until: self.sceneView.scene.rootNode) as? Max{
-                        if (self.spinning == false) {
+//                        if (self.spinning == false) {
+                        print(maxNode.position.distance(receiver: cameraPosition))
+                        if maxNode.position.distance(receiver: cameraPosition) < 2{
                             DispatchQueue.main.async {
                                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                                 generator.impactOccurred()
@@ -387,6 +391,7 @@ extension ViewController {
                             print(maxNode)
                             maxNode.spin()
                         }
+//                        }
                     }
                 }
             }
@@ -400,8 +405,8 @@ extension ViewController {
     private func findHandClassification() {
         guard let buffer = self.currentBuffer else {return}
         self.handClassification.perfomrClassification(inputBuffer: buffer) { (topPredictionName, _) in
-            print(topPredictionName)
-            print("fefefefefaefasefjawfea")
+//            print(topPredictionName)
+//            print("fefefefefaefasefjawfea")
             guard let childNode = self.sceneView.scene.rootNode.childNode(withName: "Max", recursively: true) else{print("vvvv");return;}
             guard let maxNode = childNode.topmost(until: self.sceneView.scene.rootNode) as? Max else{print("efefef");return;}
 
