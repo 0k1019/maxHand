@@ -90,7 +90,7 @@ class Max: SCNNode {
         
         let idleAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_idle.scn")
         model.addAnimationPlayer(idleAnimation, forKey: "idle")
-        idleAnimation.play()
+//        idleAnimation.play()
         
         let walkAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_walk.scn")
         walkAnimation.speed = Max.speedFactor
@@ -169,7 +169,17 @@ class Max: SCNNode {
         return Cvec
     }
     
-    
+    func maxHeadMove(look: SCNVector3){
+        self.removeAllActions()
+        self.removeAllAnimations()
+        self.enumerateChildNodes { (node, stop) in
+            if (node.name == "Bip001_Head"){
+                print("head")
+                node.look(at: look)
+                stop.pointee = true
+            }
+        }
+    }
     
     
     class func loadAnimation(fromSceneNamed sceneName: String) -> SCNAnimationPlayer {

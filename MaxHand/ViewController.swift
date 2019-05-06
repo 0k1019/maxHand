@@ -404,6 +404,9 @@ extension ViewController {
     }
     private func findHandClassification() {
         guard let buffer = self.currentBuffer else {return}
+        guard let cameraTransform = self.sceneView.session.currentFrame?.camera.transform else {return}
+        let cameraPosition = SCNVector3Make(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+
         self.handClassification.perfomrClassification(inputBuffer: buffer) { (topPredictionName, _) in
 //            print(topPredictionName)
 //            print("fefefefefaefasefjawfea")
@@ -413,12 +416,7 @@ extension ViewController {
             if(maxNode.isPaused) {print("paused")}
             
             if(topPredictionName == "hand_open"){
-//                if(self.walking == false){
-//                    maxNode.jumpStop()
-//                    maxNode.walk()
-//                    self.walking = true;
-//                    maxNode.isWalking = true
-//                }
+                maxNode.maxHeadMove(look: cameraPosition )
             }
             else if(topPredictionName == "hand_fist"){
 //                if(self.walking == false){
