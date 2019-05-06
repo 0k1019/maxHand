@@ -34,6 +34,7 @@ class ViewController: UIViewController {
     var handPreviewView = UIImageView()
     var spinning: Bool = false;
     var walking: Bool = false;
+    
     @IBAction func resetButton(){
         resetTracking();
         self.isDetectPlane = false;
@@ -121,7 +122,7 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpSceneView()
-        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.loopCoreMLUpdate), userInfo: nil, repeats: true)
+        self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.loopCoreMLUpdate), userInfo: nil, repeats: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -317,39 +318,39 @@ extension ViewController: ARSessionDelegate{
     private func resetTracking() {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal]
-        sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        self.sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
         self.sceneView.session.run(configuration)
-        sceneView.showsStatistics = true
-        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
-        sceneView.delegate = self
-        sceneView.session.delegate = self
+        self.sceneView.showsStatistics = true
+        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWireframe]
+        self.sceneView.delegate = self
+        self.sceneView.session.delegate = self
     }
     private func setUpSceneView() {
-        view = sceneView
-        sceneView.delegate = self
+        view = self.sceneView
+        self.sceneView.delegate = self
         // Start the view's AR session with a configuration that uses the rear camera,
         // device position and orientation tracking, and plane detection.
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal]
-        sceneView.session.run(configuration)
+        self.sceneView.session.run(configuration)
         
         // Set a delegate to track the number of plane anchors for providing UI feedback.
-        sceneView.session.delegate = self
+        self.sceneView.session.delegate = self
         
         // Prevent the screen from being dimmed after a while as users will likely
         // have long periods of interaction without touching the screen or buttons.
         UIApplication.shared.isIdleTimerDisabled = true
         
         // Show debug UI to view performance metrics (e.g. frames per second).
-        sceneView.showsStatistics = true
+        self.sceneView.showsStatistics = true
         
-        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
-        view.addSubview(handPreviewView)
+        view.addSubview(self.handPreviewView)
         
-        handPreviewView.translatesAutoresizingMaskIntoConstraints = false
-        handPreviewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        handPreviewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        self.handPreviewView.translatesAutoresizingMaskIntoConstraints = false
+        self.handPreviewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        self.handPreviewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }
 
