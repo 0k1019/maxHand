@@ -154,11 +154,12 @@ class Max: SCNNode {
         SCNTransaction.begin()
         self.isWalking = true
         let cameraPosition = SCNVector3Make(camera.x, camera.y, camera.z)
-        let maxPosition = makeMaxPositionBetween(Avec: cameraPosition, Bvec: self.position, By: 2)
+        let maxPosition = makeMaxPositionBetween(Avec: cameraPosition, Bvec: self.position, By: 0.7)
         let movePosition = SCNVector3Make(maxPosition.x, self.position.y, maxPosition.z)
         let move = SCNAction.move(to: movePosition, duration: 2)
-        self.characterOrientation.look(at: cameraPosition)
+        self.maxHeadMove(look: cameraPosition)
         self.runAction(move)
+        self.isWalking = false
         SCNTransaction.commit()
     }
     
@@ -170,8 +171,6 @@ class Max: SCNNode {
     }
     
     func maxHeadMove(look: SCNVector3){
-        self.removeAllActions()
-        self.removeAllAnimations()
         self.enumerateChildNodes { (node, stop) in
             if (node.name == "Bip001_Head"){
                 print("head")

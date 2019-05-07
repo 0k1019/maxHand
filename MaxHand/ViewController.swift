@@ -16,34 +16,20 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var sessionInfoLabel: UILabel!
-    @IBOutlet weak var oneOrMultiMaxModeSegmentedControl: UISegmentedControl!
-    @IBOutlet weak var instantOrPlaneMaxAppearSegmentedControl: UISegmentedControl!
+    @IBOutlet weak var handLabel: UILabel!
     
     let handDetector = HandDetector()//class
     let handClassification = HandClassification()
     
-    var isOneCharaterMode: Bool = true
-    var isInstantMode: Bool = true
-    var isDetectPlane: Bool = false
-    var detectedPlanes: [String : SCNNode] = [:]
-    
     private var timer = Timer()
-
     var currentBuffer: CVPixelBuffer?
     var currentCameraTransform:simd_float4x4?
     var handPreviewView = UIImageView()
-    var spinning: Bool = false;
-    var walking: Bool = false;
+    
+    var isMax = false
     
     @IBAction func resetButton(){
         resetTracking();
-        self.isDetectPlane = false;
-        self.isOneCharaterMode = true;
-        self.isInstantMode = true;
-        self.oneOrMultiMaxModeSegmentedControl.selectedSegmentIndex = 0
-        self.instantOrPlaneMaxAppearSegmentedControl.selectedSegmentIndex = 0
-        
-        detectedPlanes = [:]
         let rootnode = self.sceneView.scene.rootNode
         rootnode.enumerateChildNodes { (node, stop) in
 //            if (node.name == "planeNode"){
@@ -51,70 +37,11 @@ class ViewController: UIViewController {
 //            }
         }
     }
-    
-    @IBAction func oneOrMultiMaxModeSegmentedControlValueChangeAction(_ sender: Any) {
-        if (oneOrMultiMaxModeSegmentedControl.selectedSegmentIndex == 0){
-            self.isOneCharaterMode = true
-            let rootnode = self.sceneView.scene.rootNode
-            rootnode.enumerateChildNodes { (node, stop) in
-                if (node.name == "planeNode"){
-                    node.removeFromParentNode()
-                }
-            }
-        } else{
-            self.isOneCharaterMode = false
-            self.isDetectPlane = false
-            let rootnode = self.sceneView.scene.rootNode
-            rootnode.enumerateChildNodes { (node, stop) in
-                if (node.name == "planeNode"){
-                    node.removeFromParentNode()
-                }
-            }
-
-        }
-    }
-
-    @IBAction func instantOrPlaneMaxAppearSegmentedControlValueChangeAction(_ sender: Any) {
-        if(instantOrPlaneMaxAppearSegmentedControl.selectedSegmentIndex == 0){
-            self.isInstantMode = true
-        } else{
-            self.isInstantMode = false
-            self.isDetectPlane = false
-        }
-    
-    }
-    @IBAction func tapPlane(_ gesture: UITapGestureRecognizer) {
-        if self.isInstantMode {return}
-        
-        let tapLocation = gesture.location(in: self.sceneView)
-        guard let hitTest = self.sceneView.hitTest(tapLocation).first else {return}
-       
-        let hitNode = hitTest.node
-        
-        switch hitNode.name {
-        case nodeEnum.plane.rawValue:
-            let node = hitNode;
-            let translation = node.worldPosition
-            print(node)
-            print(translation)
-            let x = translation.x
-            let y = translation.y
-            let z = translation.z
-            let max = Max()
-            max.position = SCNVector3(x,y,z)
-            max.look(at: SCNVector3((currentCameraTransform?.columns.3.x)!, y, (currentCameraTransform?.columns.3.z)!))
-            self.sceneView.scene.rootNode.addChildNode(max)
-            node.removeFromParentNode()
-            break
-        default:
-            break
-        }
-    }
-    
+}
+extension ViewController {
     //시스템에의해 자동으로 호출, 리소스 초기화나 초기 화면 구성용도, 화면 처음 만들어질 때 한 번만 실행.
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         // Set the view's delegate
         self.sceneView.delegate = self
     }
@@ -141,6 +68,7 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
+    
     @objc
     private func loopCoreMLUpdate() {
         DispatchQueue.main.async{
@@ -158,41 +86,18 @@ extension ViewController: ARSCNViewDelegate {
     
     /// - Tag: PlaceARContent
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        if self.isDetectPlane { return }
-        
+        if self.isMax { return }
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-
-        if (isOneCharaterMode) {
-            self.isDetectPlane = true
-        } else {
-            self.isDetectPlane = false
-        }
         DispatchQueue.main.async {
             let generator = UIImpactFeedbackGenerator(style: .heavy)
             generator.impactOccurred()
         }
-        
-        if self.isInstantMode {
-            let max = Max()
-            let pos = planeAnchor.transform.columns.3
-            max.position = SCNVector3(pos.x,pos.y, pos.z)
-            max.look(at: SCNVector3((currentCameraTransform?.columns.3.x)!, pos.y, (currentCameraTransform?.columns.3.z)!))
-            self.sceneView.scene.rootNode.addChildNode(max)
-        }
-        else{
-            let maxExtentValue = minExtent(a: planeAnchor.extent.x, b: planeAnchor.extent.z)
-            
-            let planeNode = Plane(width: CGFloat(maxExtentValue), height: CGFloat(maxExtentValue), content: UIColor.brown.withAlphaComponent(0.7) as Any, doubleSided: false, horizontal: true)
-            planeNode.name = nodeEnum.plane.rawValue
- 
-//            node.enumerateChildNodes { (node, _) in
-//                print("efefefef")
-//                print(node.worldPosition)
-//            }
-            
-            //each ancor has an unique identifier
-            self.detectedPlanes[planeAnchor.identifier.uuidString] = planeNode
-        }
+        let max = Max()
+        let pos = planeAnchor.transform.columns.3
+        max.position = SCNVector3(pos.x,pos.y, pos.z)
+        max.look(at: SCNVector3((currentCameraTransform?.columns.3.x)!, pos.y, (currentCameraTransform?.columns.3.z)!))
+        self.sceneView.scene.rootNode.addChildNode(max)
+        self.isMax = true
         
     }
     
@@ -369,7 +274,6 @@ extension ViewController {
                     self.currentBuffer = nil
 
                     guard let tipPoint = normalizedFingerTip else {
-                        self.spinning = false
                         return
                     }
                     
@@ -380,18 +284,15 @@ extension ViewController {
                     let hitNode = hitTest.node
                     
                     if let maxNode = hitNode.topmost(until: self.sceneView.scene.rootNode) as? Max{
-//                        if (self.spinning == false) {
                         print(maxNode.position.distance(receiver: cameraPosition))
                         if maxNode.position.distance(receiver: cameraPosition) < 2{
                             DispatchQueue.main.async {
                                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                                 generator.impactOccurred()
                             }
-                            self.spinning = true
                             print(maxNode)
                             maxNode.spin()
                         }
-//                        }
                     }
                 }
             }
@@ -412,35 +313,25 @@ extension ViewController {
 //            print("fefefefefaefasefjawfea")
             guard let childNode = self.sceneView.scene.rootNode.childNode(withName: "Max", recursively: true) else{print("vvvv");return;}
             guard let maxNode = childNode.topmost(until: self.sceneView.scene.rootNode) as? Max else{print("efefef");return;}
-
+            DispatchQueue.main.async {
+                self.handLabel.text = topPredictionName
+            }
             if(maxNode.isPaused) {print("paused")}
             
             if(topPredictionName == "hand_open"){
                 maxNode.maxHeadMove(look: cameraPosition )
             }
             else if(topPredictionName == "hand_fist"){
-//                if(self.walking == false){
-//                    maxNode.walkStop()
-//                    maxNode.jump()
-//                    self.walking = true;
-                
-//                    maxNode.isJumping = true
-//                }
-            }
-            else if(topPredictionName == "hand_two"){
-//                guard let cameraTransform = self.sceneView.session.currentFrame?.camera.transform else {return}
-//                let cameraPosition = SCNVector3Make(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
-//                maxNode.maxCome(camera: cameraPosition)
+                guard let cameraTransform = self.sceneView.session.currentFrame?.camera.transform else {return}
+                let cameraPosition = SCNVector3Make(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+                maxNode.maxCome(camera: cameraPosition)
 
             }
+            else if(topPredictionName == "hand_two"){
+                
+            }
             else{
-//                maxNode.walkStop()
-//                maxNode.jumpStop()
-//                self.walking = false;
-//                maxNode.removeAllActions()
-//                maxNode.removeAllAnimations()
-                maxNode.isWalking = false
-                maxNode.isJumping = false
+
             }
         }
         
