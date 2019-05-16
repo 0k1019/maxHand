@@ -54,11 +54,24 @@ class Max: SCNNode {
             }
         }
     }
+    static private let stepsCount = 10
+
+    // Sound effects
+    private var aahSound: SCNAudioSource!
+    private var ouchSound: SCNAudioSource!
+    private var hitSound: SCNAudioSource!
+    private var hitEnemySound: SCNAudioSource!
+    private var explodeEnemySound: SCNAudioSource!
+    private var catchFireSound: SCNAudioSource!
+    private var jumpSound: SCNAudioSource!
+    private var attackSound: SCNAudioSource!
+    private var steps = [SCNAudioSource](repeating: SCNAudioSource(), count: Max.stepsCount )
     
     override init(){
         super.init()
         loadCharacter()
         loadAnimations()
+        loadSounds()
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -95,18 +108,25 @@ class Max: SCNNode {
         let walkAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_walk.scn")
         walkAnimation.speed = Max.speedFactor
         walkAnimation.stop()
+        walkAnimation.animation.animationEvents = [
+            SCNAnimationEvent(keyTime: 0.1, block: { _, _, _ in self.playFootStep() }),
+            SCNAnimationEvent(keyTime: 0.6, block: { _, _, _ in self.playFootStep() })
+        ]
         model.addAnimationPlayer(walkAnimation, forKey: "walk")
         
         let jumpAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_jump.scn")
         jumpAnimation.animation.isRemovedOnCompletion = false
         jumpAnimation.speed = 1.5
         jumpAnimation.stop()
+        jumpAnimation.animation.animationEvents = [SCNAnimationEvent(keyTime: 0, block: { _, _, _ in self.playJumpSound() })]
         model.addAnimationPlayer(jumpAnimation, forKey: "jump")
         
         let spinAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/max_spin.scn")
         spinAnimation.animation.isRemovedOnCompletion = false
         spinAnimation.speed = 1.5
         spinAnimation.stop()
+        spinAnimation.animation.animationEvents = [SCNAnimationEvent(keyTime: 0, block: { _, _, _ in self.playAttackSound() })]
+
         model.addAnimationPlayer(spinAnimation, forKey: "spin")
         
         let hiphopAnimation = Max.loadAnimation(fromSceneNamed: "art.scnassets/character/hiphopani.scn")
@@ -116,7 +136,54 @@ class Max: SCNNode {
         model.addAnimationPlayer(hiphopAnimation, forKey: "hiphop")
         
     }
-    
+    private func loadSounds() {
+        aahSound = SCNAudioSource( named: "audio/aah_extinction.mp3")!
+        aahSound.volume = 1.0
+        aahSound.isPositional = false
+        aahSound.load()
+        
+        catchFireSound = SCNAudioSource(named: "audio/panda_catch_fire.mp3")!
+        catchFireSound.volume = 5.0
+        catchFireSound.isPositional = false
+        catchFireSound.load()
+        
+        ouchSound = SCNAudioSource(named: "audio/ouch_firehit.mp3")!
+        ouchSound.volume = 2.0
+        ouchSound.isPositional = false
+        ouchSound.load()
+        
+        hitSound = SCNAudioSource(named: "audio/hit.mp3")!
+        hitSound.volume = 2.0
+        hitSound.isPositional = false
+        hitSound.load()
+        
+        hitEnemySound = SCNAudioSource(named: "audio/Explosion1.m4a")!
+        hitEnemySound.volume = 2.0
+        hitEnemySound.isPositional = false
+        hitEnemySound.load()
+        
+        explodeEnemySound = SCNAudioSource(named: "audio/Explosion2.m4a")!
+        explodeEnemySound.volume = 2.0
+        explodeEnemySound.isPositional = false
+        explodeEnemySound.load()
+        
+        jumpSound = SCNAudioSource(named: "audio/jump.m4a")!
+        jumpSound.volume = 0.2
+        jumpSound.isPositional = false
+        jumpSound.load()
+        
+        attackSound = SCNAudioSource(named: "audio/attack.mp3")!
+        attackSound.volume = 1.0
+        attackSound.isPositional = false
+        attackSound.load()
+        
+        for i in 0..<Max.stepsCount {
+            steps[i] = SCNAudioSource(named: "audio/Step_rock_0\(UInt32(i)).mp3")!
+            steps[i].volume = 0.5
+            steps[i].isPositional = false
+            steps[i].load()
+        }
+    }
     func frontCamera(cameraTransform: simd_float4x4){
         let cameraPosition = SCNVector3(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
         let distanceToTarget = cameraPosition.distance(receiver: self.position)
@@ -165,7 +232,7 @@ class Max: SCNNode {
     
     private func makeMaxPositionBetween(Avec: SCNVector3, Bvec: SCNVector3, By: Float) -> SCNVector3{
         var Dvec = Bvec - Avec
-        Dvec.normalize()
+        Dvec = Dvec.normalize()
         let Cvec = Dvec * By + Avec
         return Cvec
     }
@@ -178,6 +245,23 @@ class Max: SCNNode {
                 stop.pointee = true
             }
         }
+    }
+    
+    func playFootStep() {
+//        if groundNode != nil && isWalking { // We are in the air, no sound to play.
+            // Play a random step sound.
+            let randSnd: Int = Int(Float(arc4random()) / Float(RAND_MAX) * Float(Max.stepsCount))
+            let stepSoundIndex: Int = min(Max.stepsCount - 1, randSnd)
+            self.runAction(SCNAction.playAudio( steps[stepSoundIndex], waitForCompletion: false))
+//        }
+    }
+    
+    func playJumpSound() {
+        self.runAction(SCNAction.playAudio(jumpSound, waitForCompletion: false))
+    }
+    
+    func playAttackSound() {
+        self.runAction(SCNAction.playAudio(attackSound, waitForCompletion: false))
     }
     
     

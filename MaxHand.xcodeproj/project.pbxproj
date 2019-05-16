@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A0C7BD7228D6A79008B9120 /* audio in Resources */ = {isa = PBXBuildFile; fileRef = 2A0C7BD6228D6A79008B9120 /* audio */; };
 		2A6A0AFD22341A680080C0BA /* HandDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0AFC22341A680080C0BA /* HandDetector.swift */; };
 		2A6A0AFF22341AD20080C0BA /* HandModelOld.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0AFE22341AD20080C0BA /* HandModelOld.mlmodel */; };
 		2A6A0B01223544A80080C0BA /* HandModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 2A6A0B00223544A70080C0BA /* HandModel.mlmodel */; };
@@ -31,6 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2A0C7BD6228D6A79008B9120 /* audio */ = {isa = PBXFileReference; lastKnownFileType = folder; path = audio; sourceTree = "<group>"; };
 		2A6A0AFC22341A680080C0BA /* HandDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandDetector.swift; sourceTree = "<group>"; };
 		2A6A0AFE22341AD20080C0BA /* HandModelOld.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = HandModelOld.mlmodel; sourceTree = "<group>"; };
 		2A6A0B00223544A70080C0BA /* HandModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = HandModel.mlmodel; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 				2AF7B44A21EE03BC00A868B8 /* Assets.scnassets */,
 				2AF7B41521ECAB0A00A868B8 /* art.scnassets */,
 				2AF7B41C21ECAB0B00A868B8 /* Assets.xcassets */,
+				2A0C7BD6228D6A79008B9120 /* audio */,
 				2AF7B41E21ECAB0B00A868B8 /* LaunchScreen.storyboard */,
 				2AF7B42121ECAB0B00A868B8 /* Info.plist */,
 			);
@@ -197,6 +200,7 @@
 				2AF7B41621ECAB0A00A868B8 /* art.scnassets in Resources */,
 				2AF7B44B21EE03BD00A868B8 /* Assets.scnassets in Resources */,
 				2AF7B42021ECAB0B00A868B8 /* LaunchScreen.storyboard in Resources */,
+				2A0C7BD7228D6A79008B9120 /* audio in Resources */,
 				2AF7B41D21ECAB0B00A868B8 /* Assets.xcassets in Resources */,
 				2AF7B41B21ECAB0A00A868B8 /* Main.storyboard in Resources */,
 			);
