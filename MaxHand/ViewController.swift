@@ -49,7 +49,7 @@ extension ViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpSceneView()
-        self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.loopCoreMLUpdate), userInfo: nil, repeats: true)
+        self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.loopCoreMLUpdate), userInfo: nil, repeats: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -215,8 +215,10 @@ extension ViewController: ARSessionDelegate{
         configuration.planeDetection = [.horizontal]
         self.sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
         self.sceneView.session.run(configuration)
-        self.sceneView.showsStatistics = true
-        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWireframe]
+//        self.sceneView.showsStatistics = true
+//        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWireframe]
+        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+
         self.sceneView.delegate = self
         self.sceneView.session.delegate = self
     }
@@ -237,9 +239,9 @@ extension ViewController: ARSessionDelegate{
         UIApplication.shared.isIdleTimerDisabled = true
         
         // Show debug UI to view performance metrics (e.g. frames per second).
-        self.sceneView.showsStatistics = true
+//        self.sceneView.showsStatistics = true
         
-        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+//        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
         view.addSubview(self.handPreviewView)
         

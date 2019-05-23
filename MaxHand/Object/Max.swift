@@ -136,6 +136,7 @@ class Max: SCNNode {
         model.addAnimationPlayer(hiphopAnimation, forKey: "hiphop")
         
     }
+    
     private func loadSounds() {
         aahSound = SCNAudioSource( named: "audio/aah_extinction.mp3")!
         aahSound.volume = 1.0
@@ -184,6 +185,7 @@ class Max: SCNNode {
             steps[i].load()
         }
     }
+
     func frontCamera(cameraTransform: simd_float4x4){
         let cameraPosition = SCNVector3(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
         let distanceToTarget = cameraPosition.distance(receiver: self.position)
@@ -242,6 +244,15 @@ class Max: SCNNode {
             if (node.name == "Bip001_Head"){
                 print("head")
                 node.look(at: look)
+                stop.pointee = true
+            }
+        }
+    }
+    
+    func maxTailMove(locatio: SCNVector3){
+        self.enumerateChildNodes { (node, stop) in
+            if (node.name == "Bip001_Tail2"){
+                print("tail")
                 stop.pointee = true
             }
         }
